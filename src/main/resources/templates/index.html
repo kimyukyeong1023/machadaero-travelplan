@@ -1,11 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-</head>
-<body>
+  </head>
+  <body>
     <h2>메인 페이지</h2>
-</body>
+    <form action="/api/places">
+      <select name="" id="">
+        <option value="">지역 전체</option>
+      </select>
+      <select name="" id="">
+        <option value="">카테고리 전체</option>
+      </select>
+      <input name="keyword" type="text" placeholder="관광지, 키워드 검색" />
+      <button type="submit">검색</button>
+    </form>
+    <ul>
+      <li th:each="place : ${SearchPlaceResponseDto}">
+        <p th:text="${place.title}"></p>
+        <p th:text="${place.address}"></p>
+      </li>
+    </ul>
+
+<div th:if="${pageNo != null}">
+  <a
+    th:if="${pageNo > 1}"
+    th:href="@{/api/places(keyword=${keyword}, pageNo=${pageNo - 1})}"
+  >
+    이전
+  </a>
+
+  <span th:text="|${pageNo}페이지|"></span>
+
+  <a
+    th:if="${pageNo * numOfRows < totalCount}"
+    th:href="@{/api/places(keyword=${keyword}, pageNo=${pageNo + 1})}"
+  >
+    다음
+  </a>
+</div>
+  </body>
 </html>
