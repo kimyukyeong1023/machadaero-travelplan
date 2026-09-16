@@ -31,6 +31,7 @@ public class PlaceService {
     }
 
     public PlaceSearchResultDto searchPlace(String keyword, int pageNo) {
+        System.out.println("PlaceService - searchPlace()");
         System.out.println("PlaceService -searchPlace()");
         String incodingKeyword = URLEncoder.encode(keyword, StandardCharsets.UTF_8);
 
@@ -81,6 +82,7 @@ public class PlaceService {
     }
 
     public PlaceDetailResponseDto searchPlaceDetail(String contentid) {
+        System.out.println("PlaceService - searchPlaceDetail()");
         System.out.println("PlaceService -searchPlace()");
         String incodingContentId = URLEncoder.encode(contentid, StandardCharsets.UTF_8);
 

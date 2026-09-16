@@ -1,0 +1,34 @@
+<!doctype html>
+<html
+  lang="ko"
+  xmlns:th="http://www.thymeleaf.org"
+  th:fragment="pageLayout(pageTitle, pageHead, pageBody)"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${pageTitle}">마차대로</title>
+    <!-- 모든 화면에서 사용하는 공통 CSS -->
+    <link rel="stylesheet" th:href="@{/css/common.css}" />
+    <!-- 각 화면에서 전달한 CSS·JS 조각으로 교체 -->
+    <th:block th:replace="${pageHead}"></th:block>
+  </head>
+  <body>
+    <div class="page">
+      <!-- 모든 화면이 공유하는 헤더 -->
+      <header class="site-header">
+        <a class="brand" th:href="@{/}">마차대로</a>
+        <a href="#place-search">관광지</a>
+
+        <nav class="header-menu" aria-label="메인 메뉴">
+          <a href="#my-plans">내 계획</a>
+          <form th:action="@{/login}" method="get">
+            <button type="submit">로그인</button>
+          </form>
+        </nav>
+      </header>
+      <!-- 각 화면에서 전달한 main 전체로 교체 -->
+      <main th:replace="${pageBody}"></main>
+    </div>
+  </body>
+</html>

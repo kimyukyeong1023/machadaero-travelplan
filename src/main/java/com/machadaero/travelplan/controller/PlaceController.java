@@ -52,6 +52,7 @@ public class PlaceController {
     @GetMapping("/api/places/{contentid}")
     @ResponseBody 
     public PlaceDetailResponseDto showPlaceDetail(@PathVariable("contentid") String contentid) {
+        System.out.println("PlaceController - showPlaceDetail()");
         PlaceDetailResponseDto placeDetailResponseDto = placeService.searchPlaceDetail(contentid);
         return placeDetailResponseDto;
     }

@@ -1,14 +1,20 @@
 <!doctype html>
-<html lang="ko">
+<html
+  lang="ko"
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{fragments/layout :: pageLayout('로그인', ~{::pageHead}, ~{::main})}"
+>
   <head>
-    <meta charset="UTF-8" />
-    <title>로그인</title>
-    <link rel="stylesheet" th:href="@{/css/common.css}" />
-    <link rel="stylesheet" th:href="@{/css/plan.css}" />
+    <!-- 로그인 화면 전용 CSS -->
+    <th:block th:fragment="pageHead">
+      <link rel="stylesheet" th:href="@{/css/login.css}" />
+    </th:block>
   </head>
-  <body>
-    <header th:replace="~{fragments/header :: siteHeader}"></header>
 
-    로그인화면
+  <body>
+    <main>
+      <h2>로그인화면</h2>
+      <a href="/login/kakao">카카오 간편 로그인</a>
+    </main>
   </body>
 </html>
