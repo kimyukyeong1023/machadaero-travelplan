@@ -1,45 +1,142 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>마차대로</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/index.css}" />
+    <!-- HTML 파싱이 끝난 뒤 JS 실행 -->
+    <script th:src="@{/js/place.js}" defer></script>
   </head>
   <body>
-    <h2>메인 페이지</h2>
-    <form action="/api/places">
-      <select name="" id="">
-        <option value="">지역 전체</option>
-      </select>
-      <select name="" id="">
-        <option value="">카테고리 전체</option>
-      </select>
-      <input name="keyword" type="text" placeholder="관광지, 키워드 검색" />
-      <button type="submit">검색</button>
-    </form>
-    <ul>
-      <li th:each="place : ${SearchPlaceResponseDto}">
-        <p th:text="${place.title}"></p>
-        <p th:text="${place.address}"></p>
-      </li>
-    </ul>
+    <div class="page">
+      <header th:replace="~{fragments/header :: siteHeader}"></header>
 
-<div th:if="${pageNo != null}">
-  <a
-    th:if="${pageNo > 1}"
-    th:href="@{/api/places(keyword=${keyword}, pageNo=${pageNo - 1})}"
-  >
-    이전
-  </a>
+      <main>
+        <section
+          id="place-search"
+          class="search-section"
+          aria-label="관광지 검색"
+        >
+          <form th:action="@{/api/places}" method="get" class="search-form">
+            <!-- 지역·카테고리는 아직 검색 연동 전 -->
+            <div class="filter-row">
+              <select aria-label="지역" disabled>
+                <option value="">지역 전체</option>
+              </select>
+              <select aria-label="카테고리" disabled>
+                <option value="">카테고리 전체</option>
+              </select>
+            </div>
+            <div class="keyword-row">
+              <input
+                name="keyword"
+                type="text"
+                th:value="${keyword}"
+                aria-label="검색어"
+                placeholder="관광지, 키워드 검색"
+              />
+              <button type="submit">검색</button>
+            </div>
+          </form>
+        </section>
 
-  <span th:text="|${pageNo}페이지|"></span>
+        <div class="workspace">
+          <section
+            class="panel search-results"
+            aria-labelledby="results-heading"
+          >
+            <div class="section-heading">
+              <h2 id="results-heading">관광지 검색 결과</h2>
+              <span
+                th:if="${totalCount != null}"
+                th:text="|총 ${totalCount}건|"
+              ></span>
+            </div>
 
-  <a
-    th:if="${pageNo * numOfRows < totalCount}"
-    th:href="@{/api/places(keyword=${keyword}, pageNo=${pageNo + 1})}"
-  >
-    다음
-  </a>
-</div>
+            <div class="empty-state" th:if="${pageNo == null}">
+              <h3>가고 싶은 곳을 찾아보세요</h3>
+              <p>관광지를 검색하면 이곳에 표시됩니다.</p>
+            </div>
+            <p th:if="${totalCount != null and totalCount == 0}">
+              검색 결과가 없습니다.
+            </p>
+
+            <ul class="place-list">
+              <li
+                class="place-item"
+                th:each="place : ${SearchPlaceResponseDto}"
+              >
+                <div class="place-summary">
+                  <div class="place-text">
+                    <p class="place-title" th:text="${place.title}"></p>
+                    <p th:text="${place.address}"></p>
+                  </div>
+                  <button
+                    type="button"
+                    th:attr="data-contentid=${place.contentid}"
+                    onclick="showPlaceDetail(this)"
+                  >
+                    상세보기
+                  </button>
+                </div>
+                <!-- 기존 JS 연결을 위해 li 내부 위치와 클래스 유지 -->
+                <section class="place-detail" hidden>
+                  <h3 class="detail-title"></h3>
+                  <p class="detail-address"></p>
+                  <p class="detail-overview"></p>
+                </section>
+              </li>
+            </ul>
+
+            <nav
+              class="pagination"
+              th:if="${pageNo != null}"
+              aria-label="검색 결과 페이지"
+            >
+              <a
+                th:if="${pageNo > 1}"
+                th:href="@{/api/places(keyword=${keyword}, pageNo=${pageNo - 1})}"
+                >이전</a
+              >
+              <span th:text="|${pageNo}페이지|"></span>
+              <a
+                th:if="${pageNo * numOfRows lt totalCount}"
+                th:href="@{/api/places(keyword=${keyword}, pageNo=${pageNo + 1})}"
+                >다음</a
+              >
+            </nav>
+          </section>
+
+          <!-- 여행계획 기능 연결 전: 레이아웃 자리만 표시 -->
+          <section class="panel selected-plan" aria-labelledby="plan-heading">
+            <h2 id="plan-heading">선택한 여행계획</h2>
+            <div class="plan-days" aria-label="방문일 선택">
+              <button type="button" disabled>미정</button>
+              <button type="button" disabled>1일차</button>
+              <button type="button" disabled>2일차</button>
+            </div>
+            <div class="plan-items empty-state">
+              <p>선택한 계획의 관광지와 방문 순서가 표시될 영역</p>
+            </div>
+          </section>
+        </div>
+
+        <section
+          id="my-plans"
+          class="panel my-plans"
+          aria-labelledby="my-plans-heading"
+        >
+          <div class="section-heading">
+            <h2 id="my-plans-heading">내 계획</h2>
+            <button type="button" disabled>+ 새 계획</button>
+          </div>
+          <div class="plan-list">
+            <div class="plan-placeholder">여행계획 목록 영역</div>
+          </div>
+        </section>
+      </main>
+    </div>
   </body>
 </html>

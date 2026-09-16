@@ -5,10 +5,13 @@ import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.machadaero.travelplan.dto.PlaceSearchResultDto;
-import com.machadaero.travelplan.dto.SearchPlaceResponseDto;
+import com.machadaero.travelplan.dto.PlaceDetailResponseDto;
+import com.machadaero.travelplan.dto.PlaceSearchResponseDto;
 import com.machadaero.travelplan.service.PlaceService;
 
 
@@ -36,7 +39,7 @@ public class PlaceController {
 
         pageNo=  Math.max(1, pageNo );
         PlaceSearchResultDto placeSearchResultDto=placeService.searchPlace(keyword,pageNo);
-        List<SearchPlaceResponseDto> searchPlaceDtoList =placeSearchResultDto.getPlaces();
+        List<PlaceSearchResponseDto> searchPlaceDtoList =placeSearchResultDto.getPlaces();
         model.addAttribute("SearchPlaceResponseDto", searchPlaceDtoList);
 
         model.addAttribute("totalCount", placeSearchResultDto.getTotalCount());
@@ -44,6 +47,13 @@ public class PlaceController {
         model.addAttribute("pageNo", placeSearchResultDto.getPageNo());
         model.addAttribute("keyword", keyword);
         return "index";
+    }
+    
+    @GetMapping("/api/places/{contentid}")
+    @ResponseBody 
+    public PlaceDetailResponseDto showPlaceDetail(@PathVariable("contentid") String contentid) {
+        PlaceDetailResponseDto placeDetailResponseDto = placeService.searchPlaceDetail(contentid);
+        return placeDetailResponseDto;
     }
     
     

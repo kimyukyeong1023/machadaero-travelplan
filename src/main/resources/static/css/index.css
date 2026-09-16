@@ -1,0 +1,117 @@
+/* 메인 화면 전용: common.css 다음에 연결 */
+.filter-row, .keyword-row, .place-summary, .plan-days {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* 관광지 검색 폼 */
+.search-section {
+  padding: 1.5rem 0;
+}
+
+.search-form {
+  max-width: 33.75rem;
+  margin: 0 auto;
+}
+
+.filter-row {
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 0.625rem;
+}
+
+.filter-row select {
+  width: 10rem;
+  max-width: 100%;
+}
+
+.keyword-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 검색·상세 왼쪽 / 선택한 계획 오른쪽 */
+.workspace {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  align-items: stretch;
+}
+
+/* 검색 결과와 관광지 상세 */
+.place-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.place-item {
+  margin-bottom: 0.625rem;
+  padding: 0.625rem;
+  border: 1px solid #aaa;
+}
+
+.place-text {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.place-title {
+  font-weight: bold;
+}
+
+.place-summary button {
+  flex-shrink: 0;
+}
+
+.place-detail {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #aaa;
+  overflow-wrap: anywhere;
+}
+
+.place-detail p {
+  margin-top: 0.5rem;
+}
+
+.detail-overview {
+  white-space: pre-line;
+}
+
+/* 메인 화면 안의 선택한 계획 영역 */
+.plan-days {
+  margin: 0.75rem 0;
+  flex-wrap: wrap;
+}
+
+.plan-items {
+  min-height: 15rem;
+  border: 1px solid #aaa;
+}
+
+/* 메인 화면 하단의 내 계획 영역 */
+.my-plans {
+  margin-top: 1rem;
+}
+
+.plan-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.plan-placeholder {
+  min-height: 5.625rem;
+  padding: 0.75rem;
+  border: 1px dashed #aaa;
+}
+
+/* 메인 화면의 모바일 배치 */
+@media (max-width: 43.75rem) {
+  .workspace, .plan-list {
+    grid-template-columns: 1fr;
+  }
+}

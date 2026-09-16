@@ -4,22 +4,22 @@ import java.util.List;
 
 public class PlaceSearchResultDto {
     
-    public PlaceSearchResultDto(List<SearchPlaceResponseDto> places, int totalCount, int numOfRows, int pageNo) {
+    public PlaceSearchResultDto(List<PlaceSearchResponseDto> places, int totalCount, int numOfRows, int pageNo) {
         this.places = places;
         this.totalCount = totalCount;
         this.numOfRows = numOfRows;
         this.pageNo = pageNo;
     }
-    private List<SearchPlaceResponseDto> places;
+    private List<PlaceSearchResponseDto> places;
     private int totalCount;
     private int numOfRows;
     private int pageNo;
 
     
-    public List<SearchPlaceResponseDto> getPlaces() {
+    public List<PlaceSearchResponseDto> getPlaces() {
         return places;
     }
-    public void setPlaces(List<SearchPlaceResponseDto> places) {
+    public void setPlaces(List<PlaceSearchResponseDto> places) {
         this.places = places;
     }
     public int getTotalCount() {
