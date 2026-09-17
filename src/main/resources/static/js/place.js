@@ -1,3 +1,5 @@
+console.log()
+
 async function showPlaceDetail(button) {
   const contentid = button.dataset.contentid;
 

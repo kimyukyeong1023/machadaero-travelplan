@@ -22,8 +22,18 @@
 
         <nav class="header-menu" aria-label="메인 메뉴">
           <a href="#my-plans">내 계획</a>
-          <form th:action="@{/login}" method="get">
-            <button type="submit">로그인</button>
+          <!-- 비로그인 상태 -->
+          <a th:if="${session.loginUserId == null}" th:href="@{/login}">
+            로그인
+          </a>
+
+          <!-- 로그인 상태 -->
+          <form
+            th:if="${session.loginUserId != null}"
+            th:action="@{/logout}"
+            method="post"
+          >
+            <button type="submit">로그아웃</button>
           </form>
         </nav>
       </header>
