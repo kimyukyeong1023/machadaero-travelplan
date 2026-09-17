@@ -21,7 +21,7 @@
         <a href="#place-search">관광지</a>
 
         <nav class="header-menu" aria-label="메인 메뉴">
-          <a href="#my-plans">내 계획</a>
+          <a th:href="@{/plans}">내 계획</a>
           <!-- 비로그인 상태 -->
           <a th:if="${session.loginUserId == null}" th:href="@{/login}">
             로그인

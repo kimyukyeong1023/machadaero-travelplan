@@ -85,6 +85,7 @@ public class LoginService {
     }
 
     public String requestUserInfo(String token) {
+        System.out.println("LoginService - requestUserInfo()");
 
         RestClient restClient = RestClient.create();
 

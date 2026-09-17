@@ -1,0 +1,66 @@
+<!doctype html>
+<html
+  lang="ko"
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{fragments/layout :: pageLayout('내 여행계획 - 마차대로', ~{::pageHead}, ~{::main})}"
+>
+  <head>
+    <th:block th:fragment="pageHead">
+      <link rel="stylesheet" th:href="@{/css/plans.css}" />
+    </th:block>
+  </head>
+  <body>
+    <main>
+      <!-- 상단 헤더 영역 -->
+      <div class="plan-header-wrapper">
+        <div class="plan-header-center">
+          <h2>내 여행계획</h2>
+          <p>계획을 선택하면 상세 일정을 확인할 수 있습니다.</p>
+        </div>
+        <button type="button" class="btn-new-plan" onclick="location.href='/plans/new'">+ 새 계획</button>
+      </div>
+
+      <!-- 분류 탭 -->
+      <div class="plan-tabs">
+        <a href="#" class="active">전체</a>
+        <a href="#">예정된 여행</a>
+        <a href="#">날짜 미정</a>
+      </div>
+
+      <!-- 리스트 영역 -->
+      <div class="plan-list-container">
+        <!-- 리스트 헤더 (항목명) -->
+        <div class="list-header">
+          <span class="col-title">여행계획</span>
+          <span class="col-date">여행 기간</span>
+          <span class="col-btn"></span>
+        </div>
+
+        <!-- 계획 목록 -->
+        <ul class="plan-list">
+          <li class="plan-item" th:each="plan : ${planList}">
+            <div class="col-title"><h3 th:text="${plan.title}">여행계획</h3></div>
+            <div class="col-date">
+              <span th:text="${plan.startDate != null ? #temporals.format(plan.startDate, 'yyyy. MM. dd') : '날짜 미정'}">날짜 미정</span>
+              ~
+              <span th:text="${plan.endDate != null ? #temporals.format(plan.endDate, 'yyyy. MM. dd') : '날짜 미정'}">날짜 미정</span>
+            </div>
+            <div class="col-btn"><form method="get" th:action="@{/plans/{planId}(planId=${plan.id})}"><button type="submit" class="btn-outline">일정 보기 &rarr;</button></form></div>
+          </li>
+          <li class="plan-item" th:if="${#lists.isEmpty(planList)}">
+            <div class="col-title">등록된 여행계획이 없습니다.</div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- 페이징 (common.css의 .pagination 활용) -->
+      <nav class="pagination" aria-label="페이지 이동">
+        <a href="#">&lt;</a>
+        <a href="#" class="active" style="border: 1px solid #222; padding: 0.1rem 0.5rem;">1</a>
+        <a href="#">2</a>
+        <a href="#">3</a>
+        <a href="#">&gt;</a>
+      </nav>
+    </main>
+  </body>
+</html>

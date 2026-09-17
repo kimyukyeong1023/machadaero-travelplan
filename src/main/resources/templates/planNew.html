@@ -1,0 +1,58 @@
+<!doctype html>
+<html
+  lang="ko"
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{fragments/layout :: pageLayout('새 계획 생성 - 마차대로', ~{::pageHead}, ~{::main})}"
+>
+  <head>
+    <th:block th:fragment="pageHead">
+      <link rel="stylesheet" th:href="@{/css/plans.css}" />
+    </th:block>
+  </head>
+  <body>
+    <main>
+      <!-- 새 계획을 서버로 전송할 Form -->
+      <form th:action="@{/plans}" method="post" class="plan-form">
+        
+        <!-- 상단 컨트롤 바 -->
+        <div class="plan-form-header">
+          <a th:href="@{/plans}" class="btn-back">&larr; 내 계획 목록</a>
+          <div class="header-actions">
+            <button type="submit" class="btn-submit">계획 만들기</button>
+            <button type="button" class="btn-cancel" onclick="location.href='/plans'">취소</button>
+          </div>
+        </div>
+
+        <!-- 중앙 입력 영역 -->
+        <div class="plan-form-body">
+          <div class="form-group">
+            <label for="title">제목 <span class="required">*</span></label>
+            <input type="text" id="title" name="title" placeholder="여행 제목을 입력하세요" required autofocus />
+          </div>
+
+          <div class="form-group">
+            <label>여행 기간 (선택)</label>
+            <div class="date-range">
+              <input type="date" id="startDate" name="startDate" />
+              <span>~</span>
+              <input type="date" id="endDate" name="endDate" />
+            </div>
+            <p class="help-text">기간은 나중에 입력할 수 있습니다.</p>
+          </div>
+        </div>
+      </form>
+
+      <!-- 하단 안내 영역 (계획 저장 전) -->
+      <section class="schedule-preview-section">
+        <div class="section-heading">
+          <h3>전체 일정</h3>
+          <button type="button" disabled>+ 일정 추가</button>
+        </div>
+        <div class="schedule-empty-box">
+          <p>계획을 먼저 저장하면 일정을 추가할 수 있습니다.</p>
+        </div>
+        <p class="help-text-bottom">계획 생성 후 위와 같은 화면에서 일정을 추가합니다.</p>
+      </section>
+    </main>
+  </body>
+</html>

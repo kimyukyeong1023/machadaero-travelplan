@@ -1,0 +1,450 @@
+/* 상단 헤더 (중앙 정렬 및 우측 버튼 배치) */
+.plan-header-wrapper {
+  position: relative;
+  text-align: center;
+  margin: 3rem 0 2rem;
+}
+
+.plan-header-center h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.plan-header-center p {
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.btn-new-plan {
+  position: absolute;
+  right: 0;
+  top: 0;
+  background: #fff;
+  border: 1px solid #222;
+}
+
+/* 탭 네비게이션 */
+.plan-tabs {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.plan-tabs a {
+  text-decoration: none;
+  color: #555;
+  padding: 0.5rem 0;
+  font-size: 0.875rem;
+}
+
+.plan-tabs a.active {
+  color: #222;
+  font-weight: bold;
+  border-bottom: 2px solid #222;
+  margin-bottom: -1px; /* 부모 테두리를 덮어쓰기 위해 */
+}
+
+/* 리스트 레이아웃 */
+.list-header {
+  display: flex;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #222; /* 굵은 구분선 */
+  font-size: 0.875rem;
+  font-weight: bold;
+}
+
+.plan-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.plan-item {
+  display: flex;
+  align-items: center;
+  padding: 1.25rem 1rem;
+  border: 1px solid #aaa;
+  margin-top: 0.75rem; /* 카드 사이 간격 */
+}
+
+/* 컬럼별 너비 조절 (Flex) */
+.col-title {
+  flex: 1;
+}
+
+.col-date {
+  flex: 2;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.col-btn {
+  flex: 1;
+  text-align: right;
+}
+
+.btn-outline {
+  background: #fff;
+  border: 1px solid #aaa;
+  font-size: 0.875rem;
+}
+
+
+
+/* --- 새 계획 생성 폼 전용 스타일 --- */
+.plan-form {
+  margin: 1.5rem 0 3rem;
+}
+
+.plan-form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 2.5rem;
+}
+
+.btn-back {
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.header-actions button {
+  margin-left: 0.5rem;
+  background: #fff;
+  border: 1px solid #222;
+}
+
+.header-actions .btn-submit {
+  font-weight: bold;
+}
+
+.plan-form-body {
+  max-width: 28rem;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 2rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.required {
+  color: #e53e3e;
+}
+
+.form-group input[type="text"] {
+  width: 100%;
+  text-align: center;
+  padding: 0.5rem;
+  border: 1px solid #888;
+}
+
+.date-range {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.date-range input[type="date"] {
+  padding: 0.4rem;
+  border: 1px solid #888;
+}
+
+.help-text {
+  font-size: 0.8rem;
+  color: #666;
+  margin: 0;
+}
+
+/* 하단 일정 미리보기 영역 (비활성 상태) */
+.schedule-preview-section {
+  margin-top: 3rem;
+  border-top: 1px solid #222;
+  padding-top: 1rem;
+}
+
+.schedule-empty-box {
+  border: 1px solid #888;
+  padding: 2.5rem 1rem;
+  text-align: center;
+  background-color: #f9f9f9;
+  margin-bottom: 0.5rem;
+}
+
+.help-text-bottom {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+/* --- 계획 상세 화면 전용 스타일 --- */
+.plan-detail-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr; /* 좌, 중, 우 3분할 */
+  align-items: center;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #ddd;
+  margin: 1.5rem 0 2rem;
+}
+
+.header-left {
+  justify-self: start;
+}
+
+.plan-title-area {
+  text-align: center;
+}
+
+.plan-title-area h2 {
+  font-size: 1.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.plan-title-area .plan-date {
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.header-right {
+  justify-self: end;
+}
+
+/* 세부 일정 리스트 */
+.schedule-section {
+  margin-top: 2rem;
+}
+
+.schedule-header {
+  margin-bottom: 0.5rem;
+  border-bottom: none; /* list-header의 기본 테두리 제거 */
+}
+
+.schedule-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem 0;
+}
+
+.schedule-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border: 1px solid #aaa;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+/* 컬럼별 너비 및 정렬 */
+.col-order { width: 4rem; text-align: center; }
+.col-s-date { width: 5rem; text-align: center; }
+.col-place { width: 12rem; font-weight: bold; }
+.col-memo { flex: 1; }
+.col-manage { 
+  width: 14rem; 
+  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.manage-links a {
+  text-decoration: none;
+  color: #555;
+}
+
+.manage-links a:hover {
+  text-decoration: underline;
+}
+
+.btn-move {
+  background: #fff;
+  border: 1px solid #aaa;
+  padding: 0.2rem 0.5rem;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+
+/* --- 일정 추가/수정 팝업 (Modal) --- */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-overlay[hidden] {
+  display: none;
+}
+
+.modal-content {
+  background: #fff;
+  width: 50rem; /* 약 800px */
+  max-width: 95vw;
+  padding: 2rem;
+  border: 1px solid #222;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  position: relative;
+}
+
+.modal-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.modal-header h2 {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.btn-close {
+  position: absolute;
+  top: -1rem;
+  right: -1rem;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #555;
+}
+
+.plan-badge {
+  display: inline-block;
+  border: 1px solid #222;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+}
+
+/* 폼 레이아웃 (Grid 활용) */
+.schedule-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.row-label {
+  width: 5rem;
+  font-weight: bold;
+  padding-top: 0.5rem;
+  flex-shrink: 0;
+}
+
+.row-input {
+  flex: 1;
+}
+
+.row-input input[type="text"],
+.row-input textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #aaa;
+  resize: vertical;
+}
+
+.row-input.full-width {
+  flex: 1;
+}
+
+.row-side {
+  width: 12rem;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.btn-search-place {
+  width: 100%;
+  padding: 0.5rem;
+}
+
+.field-help {
+  font-size: 0.75rem;
+  color: #666;
+  margin: 0;
+}
+
+/* 시간 입력 영역 */
+.time-inputs {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.input-group input {
+  padding: 0.4rem;
+  border: 1px solid #aaa;
+}
+
+.inline-label {
+  padding-top: 0.5rem;
+  font-weight: bold;
+}
+
+.duration-input {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.duration-input input {
+  width: 4rem;
+  padding: 0.4rem;
+  border: 1px solid #aaa;
+  text-align: right;
+}
+
+/* 모달 하단 버튼 */
+.modal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #eee;
+}
+
+.footer-help {
+  font-size: 0.875rem;
+  color: #666;
+  margin: 0;
+}
+
+.footer-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-solid {
+  background: #222;
+  color: #fff;
+  border: 1px solid #222;
+  font-weight: bold;
+  padding: 0.375rem 1rem;
+}
