@@ -11,14 +11,18 @@
   </head>
   <body>
     <main>
-      <!-- 새 계획을 서버로 전송할 Form -->
-      <form th:action="@{/plans}" method="post" class="plan-form">
+      <div class="plan-form">
         
         <!-- 상단 컨트롤 바 -->
         <div class="plan-form-header">
           <a th:href="@{/plans}" class="btn-back">&larr; 내 계획 목록</a>
           <div class="header-actions">
-            <button type="submit" class="btn-submit">계획 만들기</button>
+            <form id="create-plan-form" th:if="${planDto == null}" th:action="@{/plans}" method="post" style="display: inline;">
+              <button type="submit" class="btn-submit">계획 만들기</button>
+            </form>
+            <form id="edit-plan-form" th:if="${planDto != null}" th:action="@{/plans/{planId}/edit(planId=${planDto.id})}" method="post" style="display: inline;">
+              <button type="submit" class="btn-submit">수정</button>
+            </form>
             <button type="button" class="btn-cancel" onclick="location.href='/plans'">취소</button>
           </div>
         </div>
@@ -27,20 +31,20 @@
         <div class="plan-form-body">
           <div class="form-group">
             <label for="title">제목 <span class="required">*</span></label>
-            <input type="text" id="title" name="title" placeholder="여행 제목을 입력하세요" required autofocus />
+            <input type="text" id="title" name="title" th:attr="form=${planDto != null ? 'edit-plan-form' : 'create-plan-form'}" th:value="${planDto != null ? planDto.title : ''}" placeholder="여행 제목을 입력하세요" required autofocus />
           </div>
 
           <div class="form-group">
             <label>여행 기간 (선택)</label>
             <div class="date-range">
-              <input type="date" id="startDate" name="startDate" />
+              <input type="date" id="startDate" name="startDate" th:attr="form=${planDto != null ? 'edit-plan-form' : 'create-plan-form'}" th:value="${planDto != null and planDto.startDate != null ? #temporals.format(planDto.startDate, 'yyyy-MM-dd') : ''}" />
               <span>~</span>
-              <input type="date" id="endDate" name="endDate" />
+              <input type="date" id="endDate" name="endDate" th:attr="form=${planDto != null ? 'edit-plan-form' : 'create-plan-form'}" th:value="${planDto != null and planDto.endDate != null ? #temporals.format(planDto.endDate, 'yyyy-MM-dd') : ''}" />
             </div>
             <p class="help-text">기간은 나중에 입력할 수 있습니다.</p>
           </div>
         </div>
-      </form>
+      </div>
 
       <!-- 하단 안내 영역 (계획 저장 전) -->
       <section class="schedule-preview-section">

@@ -7,6 +7,31 @@
   <head>
     <th:block th:fragment="pageHead">
       <link rel="stylesheet" th:href="@{/css/plans.css}" />
+      <style>
+        .plan-list-container .col-btn {
+          flex: 1.5;
+        }
+
+        .plan-actions {
+          display: flex;
+          justify-content: flex-end;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+        }
+
+        .plan-actions form {
+          margin: 0;
+        }
+
+        .plan-actions button {
+          white-space: nowrap;
+        }
+
+        .plan-actions .btn-delete-plan {
+          color: #b42318;
+          border-color: #b42318;
+        }
+      </style>
     </th:block>
   </head>
   <body>
@@ -33,7 +58,7 @@
         <div class="list-header">
           <span class="col-title">여행계획</span>
           <span class="col-date">여행 기간</span>
-          <span class="col-btn"></span>
+          <span class="col-btn">관리</span>
         </div>
 
         <!-- 계획 목록 -->
@@ -45,7 +70,22 @@
               ~
               <span th:text="${plan.endDate != null ? #temporals.format(plan.endDate, 'yyyy. MM. dd') : '날짜 미정'}">날짜 미정</span>
             </div>
-            <div class="col-btn"><form method="get" th:action="@{/plans/{planId}(planId=${plan.id})}"><button type="submit" class="btn-outline">일정 보기 &rarr;</button></form></div>
+            <div class="col-btn plan-actions">
+              <form method="get" th:action="@{/plans/{planId}(planId=${plan.id})}">
+                <button type="submit" class="btn-outline">일정 보기 &rarr;</button>
+              </form>
+              <!-- 수정 화면과 삭제 처리는 해당 컨트롤러 경로 구현이 필요합니다. -->
+              <form method="get" th:action="@{/plans/{planId}/edit(planId=${plan.id})}">
+                <button type="submit" class="btn-outline">계획 수정</button>
+              </form>
+              <form
+                method="post"
+                th:action="@{/plans/{planId}/delete(planId=${plan.id})}"
+                onsubmit="return confirm('이 여행계획을 삭제하시겠습니까?');"
+              >
+                <button type="submit" class="btn-outline btn-delete-plan">계획 삭제</button>
+              </form>
+            </div>
           </li>
           <li class="plan-item" th:if="${#lists.isEmpty(planList)}">
             <div class="col-title">등록된 여행계획이 없습니다.</div>

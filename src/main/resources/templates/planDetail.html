@@ -23,10 +23,7 @@
           <p class="plan-date">2026. 09. 20 ~ 2026. 09. 22</p>
         </div>
 
-        <div class="header-right header-actions">
-          <button type="button" class="btn-outline">계획 수정</button>
-          <button type="button" class="btn-outline">계획 삭제</button>
-        </div>
+
       </div>
 
       <!-- 세부 일정(방문 장소) 영역 -->
@@ -55,33 +52,53 @@
 
           <!-- 일정 목록 -->
           <ul class="schedule-list">
-            <!-- 샘플 데이터 1 -->
-            <li class="schedule-item">
-              <span class="col-order">1</span>
-              <span class="col-s-date">09.20</span>
-              <span class="col-place">성산일출봉</span>
-              <span class="col-memo">오전 산책</span>
+            <li class="schedule-item" th:each="planItem : ${planItemList}">
+              <span class="col-order" th:text="${planItem.sortOrder}">1</span>
+              <span
+                class="col-s-date"
+                th:text="${planItem.visitDate != null ? #temporals.format(planItem.visitDate, 'MM.dd') : '미정'}"
+              >09.20</span>
+              <span class="col-place" th:text="${planItem.placeName}">성산일출봉</span>
+              <span class="col-memo" th:text="${planItem.memo}">오전 산책</span>
               <div class="col-manage">
-                <span class="manage-links">
+                <div class="manage-links">
                   <a href="#">상세</a> &middot;
                   <!-- 리스트 안의 '수정' 버튼 -->
                   <a
                     href="#"
+                    th:attr="data-item-id=${planItem.id},
+                             data-place-name=${planItem.placeName},
+                             data-place-address=${planItem.address},
+                             data-visit-date=${planItem.visitDate != null ? #temporals.format(planItem.visitDate, 'yyyy-MM-dd') : ''},
+                             data-visit-time=${planItem.visitTime != null ? #temporals.format(planItem.visitTime, 'HH:mm') : ''},
+                             data-duration=${planItem.duration},
+                             data-memo=${planItem.memo},
+                             data-extra-memo=${planItem.extraMemo}"
                     onclick="
-                      openScheduleModal();
+                      openScheduleModal(this);
                       return false;
                     "
                   >
                     수정</a
                   >
                   &middot;
-                  <a href="#">삭제</a>
-                </span>
+                  <form
+                    method="post"
+                    th:action="@{/plans/{planId}/items/{itemId}/delete(planId=${planId},itemId=${planItem.id})}"
+                    onsubmit="return confirm('이 일정을 삭제하시겠습니까?');"
+                    style="display: inline;"
+                  >
+                    <button type="submit" class="btn-outline">삭제</button>
+                  </form>
+                </div>
                 <button type="button" class="btn-move">&uarr;</button>
                 <button type="button" class="btn-move">&darr;</button>
               </div>
             </li>
           </ul>
+          <p class="help-text-bottom" th:if="${#lists.isEmpty(planItemList)}">
+            등록된 일정이 없습니다. 일정을 추가해 주세요.
+          </p>
         </div>
 
         <p class="help-text-bottom">상세·수정은 일정 팝업으로 표시합니다.</p>
@@ -110,6 +127,7 @@
               class="schedule-form"
               method="post"
               th:action="@{/plans/{planId}/items(planId=${planId})}"
+              th:attr="data-plan-id=${planId}"
             >
               <!-- 장소명 -->
               <div class="form-row">
@@ -208,7 +226,7 @@
               >
                 취소
               </button>
-              <button type="submit" form="schedule-form" class="btn-solid">
+              <button id="schedule-submit" type="submit" form="schedule-form" class="btn-solid">
                 일정 저장
               </button>
             </div>
@@ -219,9 +237,44 @@
       <script>
         const modal = document.getElementById("schedule-modal");
 
-        function openScheduleModal() {
+        function openScheduleModal(editButton) {
+          const form = document.getElementById("schedule-form");
+          form.reset();
+          const planId = form.dataset.planId;
+          form.method = "post";
+
+          if (editButton) {
+            const itemId = editButton.dataset.itemId;
+            // 팝업의 '일정 수정' 버튼을 누르면 이 경로로 POST 전송합니다.
+            form.action = `/plans/${planId}/items/${itemId}/edit`;
+          } else {
+            // 새 일정 저장 경로
+            form.action = `/plans/${planId}/items`;
+          }
+          document.getElementById("modal-title").textContent = editButton
+            ? "일정 수정"
+            : "일정 추가";
+          document.getElementById("schedule-submit").textContent = editButton
+            ? "일정 수정"
+            : "일정 저장";
+
+          if (editButton) {
+            const item = editButton.dataset;
+            const fields = [
+              "placeName",
+              "placeAddress",
+              "visitDate",
+              "visitTime",
+              "duration",
+              "memo",
+              "extraMemo",
+            ];
+            fields.forEach((name) => {
+              form.elements.namedItem(name).value = item[name] ?? "";
+            });
+          }
+
           modal.hidden = false;
-          // 추후 '수정' 클릭 시에는 여기에 기존 데이터를 폼에 채워넣는 로직이 들어갑니다.
         }
 
         function closeScheduleModal() {
