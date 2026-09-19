@@ -12,5 +12,6 @@ import com.machadaero.travelplan.entity.TravelPlan;
 public interface PlanItemRepository extends JpaRepository<PlanItem, Long> {
 
     List<PlanItem> findByTravelPlanOrderBySortOrderAsc(TravelPlan travelPlan);
+    void deleteByTravelPlan(TravelPlan travelPlan);
 
 }

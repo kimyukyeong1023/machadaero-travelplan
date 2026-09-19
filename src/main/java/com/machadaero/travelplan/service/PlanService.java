@@ -12,18 +12,23 @@ import com.machadaero.travelplan.dto.PlanResponseDto;
 import com.machadaero.travelplan.dto.PlanUpdateRequestDto;
 import com.machadaero.travelplan.entity.TravelPlan;
 import com.machadaero.travelplan.entity.User;
+import com.machadaero.travelplan.repository.PlanItemRepository;
 import com.machadaero.travelplan.repository.TravelPlanRepository;
 import com.machadaero.travelplan.repository.UserRepository;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class PlanService {
 
     private final TravelPlanRepository travelPlanRepository;
+    private final PlanItemRepository planItemRepository;
     private final UserRepository userRepository;
 
-    public PlanService(TravelPlanRepository travelPlanRepository, UserRepository userRepository) {
+    public PlanService(TravelPlanRepository travelPlanRepository, UserRepository userRepository, PlanItemRepository planItemRepository) {
         this.travelPlanRepository = travelPlanRepository;
         this.userRepository = userRepository;
+        this.planItemRepository =planItemRepository;
     }
 
     public void createPlan(Long loginUserId, PlanCreateRequestDto requestDto) {
@@ -82,6 +87,7 @@ public class PlanService {
         travelPlanRepository.save(travelPlan);
     }
 
+    @Transactional 
     public void deletePlan(Long loginUserId, Long planId) {
         System.out.println("PlanService - deletePlan()");
 
@@ -91,6 +97,7 @@ public class PlanService {
         if (loginUserId == null || !loginUserId.equals(travelPlan.getUser().getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "본인의 여행계획만 삭제할 수 있습니다.");
         }
+        planItemRepository.deleteByTravelPlan(travelPlan);
 
         travelPlanRepository.delete(travelPlan);
     }
