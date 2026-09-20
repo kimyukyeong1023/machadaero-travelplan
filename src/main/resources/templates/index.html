@@ -5,95 +5,307 @@
   th:replace="~{fragments/layout :: pageLayout('마차대로', ~{::pageHead}, ~{::main})}"
 >
   <head>
-    <!-- 이 화면의 CSS·JS를 공통 틀의 head에 전달 -->
     <th:block th:fragment="pageHead">
       <link rel="stylesheet" th:href="@{/css/index.css}" />
+      <script th:src="@{/js/place-pagination.js}" defer></script>
       <script th:src="@{/js/place.js}" defer></script>
+      <!-- Codex 추가: 메인의 계획 카드에 분류와 정렬을 적용합니다. -->
+      <script th:src="@{/js/home-plans.js}" defer></script>
     </th:block>
   </head>
   <body>
-    <main>
-      <section id="place-search" class="search-section" aria-label="관광지 검색">
-        <form th:action="@{/api/places}" method="get" class="search-form">
-          <!-- 지역·카테고리는 아직 검색 연동 전 -->
-          <div class="filter-row">
-            <select aria-label="지역" disabled>
-              <option value="">지역 전체</option>
-            </select>
-            <select aria-label="카테고리" disabled>
-              <option value="">카테고리 전체</option>
-            </select>
-          </div>
-          <div class="keyword-row">
-            <input name="keyword" type="text" th:value="${keyword}"
-                   aria-label="검색어" placeholder="관광지, 키워드 검색" />
-            <button type="submit">검색</button>
-          </div>
+    <main class="home-page">
+      <!-- 1. 검색 영역 -->
+      <section id="place-search" class="search-area">
+        <div class="search-filters">
+          <!-- Codex 수정: 법정동 시도 코드를 전송하고 검색 후 선택값을 유지합니다.
+         form 속성으로 아래 검색 폼에 연결해 기존 HTML 배치를 유지합니다. -->
+          <select name="lDongRegnCd" form="place-search-form">
+            <option
+              value=""
+              th:selected="${lDongRegnCd == null or lDongRegnCd == ''}"
+            >
+              지역 전체
+            </option>
+            <option value="11" th:selected="${lDongRegnCd == '11'}">
+              서울
+            </option>
+            <option value="26" th:selected="${lDongRegnCd == '26'}">
+              부산
+            </option>
+            <option value="27" th:selected="${lDongRegnCd == '27'}">
+              대구
+            </option>
+            <option value="28" th:selected="${lDongRegnCd == '28'}">
+              인천
+            </option>
+            <option value="29" th:selected="${lDongRegnCd == '29'}">
+              광주
+            </option>
+            <option value="30" th:selected="${lDongRegnCd == '30'}">
+              대전
+            </option>
+            <option value="31" th:selected="${lDongRegnCd == '31'}">
+              울산
+            </option>
+            <option value="36" th:selected="${lDongRegnCd == '36'}">
+              세종
+            </option>
+            <option value="41" th:selected="${lDongRegnCd == '41'}">
+              경기
+            </option>
+            <option value="51" th:selected="${lDongRegnCd == '51'}">
+              강원
+            </option>
+            <option value="43" th:selected="${lDongRegnCd == '43'}">
+              충북
+            </option>
+            <option value="44" th:selected="${lDongRegnCd == '44'}">
+              충남
+            </option>
+            <option value="52" th:selected="${lDongRegnCd == '52'}">
+              전북
+            </option>
+            <option value="46" th:selected="${lDongRegnCd == '46'}">
+              전남
+            </option>
+            <option value="47" th:selected="${lDongRegnCd == '47'}">
+              경북
+            </option>
+            <option value="48" th:selected="${lDongRegnCd == '48'}">
+              경남
+            </option>
+            <option value="50" th:selected="${lDongRegnCd == '50'}">
+              제주
+            </option>
+          </select>
+
+          <!-- Codex 수정: 첨부된 신분류표의 대분류 코드를 전송합니다.
+         value는 API 코드이고 화면에는 사용자용 분류명을 표시합니다. -->
+          <select name="lclsSystm1" form="place-search-form">
+            <option
+              value=""
+              th:selected="${lclsSystm1 == null or lclsSystm1 == ''}"
+            >
+              카테고리 전체
+            </option>
+            <option value="NA" th:selected="${lclsSystm1 == 'NA'}">
+              자연관광
+            </option>
+            <option value="HS" th:selected="${lclsSystm1 == 'HS'}">
+              역사관광
+            </option>
+            <option value="VE" th:selected="${lclsSystm1 == 'VE'}">
+              문화관광
+            </option>
+            <option value="EX" th:selected="${lclsSystm1 == 'EX'}">
+              체험관광
+            </option>
+            <option value="LS" th:selected="${lclsSystm1 == 'LS'}">
+              레저스포츠
+            </option>
+            <option value="AC" th:selected="${lclsSystm1 == 'AC'}">숙박</option>
+            <option value="FD" th:selected="${lclsSystm1 == 'FD'}">음식</option>
+            <option value="SH" th:selected="${lclsSystm1 == 'SH'}">쇼핑</option>
+            <option value="EV" th:selected="${lclsSystm1 == 'EV'}">
+              축제/공연/행사
+            </option>
+            <option value="C01" th:selected="${lclsSystm1 == 'C01'}">
+              추천코스
+            </option>
+          </select>
+        </div>
+
+        <!-- Codex 수정: 바깥의 select 두 개를 연결하기 위해 id를 추가합니다. -->
+        <form
+          id="place-search-form"
+          class="search-keyword"
+          th:action="@{/api/places}"
+          method="get"
+        >
+          <input
+            type="text"
+            name="keyword"
+            th:value="${keyword}"
+            placeholder="키워드로 관광지 검색"
+          />
+          <button type="submit">검색</button>
         </form>
       </section>
 
-      <div class="workspace">
-        <section class="panel search-results" aria-labelledby="results-heading">
-          <div class="section-heading">
-            <h2 id="results-heading">관광지 검색 결과</h2>
-            <span th:if="${totalCount != null}" th:text="|총 ${totalCount}건|"></span>
-          </div>
+      <!-- 2. 가운데 영역 -->
+      <div class="content-area">
+        <!-- 검색 전 안내 -->
+        <section class="search-guide" th:if="${pageNo == null}">
+          <h2>가고 싶은 곳을 찾아 여행계획에 담아보세요</h2>
+          <p>관광지 검색 → 계획에 추가 → 방문일과 순서 정리</p>
+        </section>
 
-          <div class="empty-state" th:if="${pageNo == null}">
-            <h3>가고 싶은 곳을 찾아보세요</h3>
-            <p>관광지를 검색하면 이곳에 표시됩니다.</p>
-          </div>
-          <p th:if="${totalCount != null and totalCount == 0}">검색 결과가 없습니다.</p>
+        <!-- 컨트롤러에서 전달한 검색 결과와 페이지 정보 표시 -->
+        <!-- Codex 수정: 페이지 처리 JS가 현재 검색에 적용된 지역·카테고리를 읽도록
+     data-l-dong-regn-cd와 data-lcls-systm1을 추가합니다. -->
+        <section
+          class="search-results"
+          th:if="${pageNo != null}"
+          th:attr="data-batch-no=${pageNo},
+                  data-total-count=${totalCount},
+                  data-keyword=${keyword},
+                  data-l-dong-regn-cd=${lDongRegnCd},
+                  data-lcls-systm1=${lclsSystm1},
+                  data-search-url=@{/api/places}"
+        >
+          <h2>관광지 검색 결과</h2>
+          <p class="search-count" th:text="|총 ${totalCount}건|">총 0건</p>
+          <p
+            class="search-empty"
+            th:hidden="${!#lists.isEmpty(SearchPlaceResponseDto)}"
+          >
+            검색 결과가 없습니다.
+          </p>
 
           <ul class="place-list">
-            <li class="place-item" th:each="place : ${SearchPlaceResponseDto}">
-              <div class="place-summary">
-                <div class="place-text">
-                  <p class="place-title" th:text="${place.title}"></p>
-                  <p th:text="${place.address}"></p>
-                </div>
-                <button type="button" th:attr="data-contentid=${place.contentid}"
-                        onclick="showPlaceDetail(this)">상세보기</button>
+            <li
+              class="place-item"
+              th:each="place, status : ${SearchPlaceResponseDto}"
+              th:hidden="${status.index >= 5}"
+            >
+              <!-- Codex 수정: 검색 목록에 썸네일을 표시하고, URL이 없으면 안내 문구를 표시합니다. -->
+              <div class="place-image">
+                <img
+                  th:if="${!#strings.isEmpty(place.thumbnailUrl)}"
+                  th:src="${place.thumbnailUrl}"
+                  th:alt="${place.title}"
+                  loading="lazy"
+                />
+
+                <span th:if="${#strings.isEmpty(place.thumbnailUrl)}">
+                  이미지 없음
+                </span>
               </div>
-              <!-- 기존 JS 연결을 위해 li 내부 위치와 클래스 유지 -->
-              <section class="place-detail" hidden>
-                <h3 class="detail-title"></h3>
+              <div class="place-info">
+                <h3 th:text="${place.title}">관광지 이름</h3>
+                <p th:text="${place.address}">관광지 주소</p>
+              </div>
+              <button
+                type="button"
+                class="place-detail-button"
+                th:attr="data-contentid=${place.contentid}
+                      ,data-detail-url=@{/api/places/{id}(id=${place.contentid})}"
+              >
+                상세보기
+              </button>
+
+              <p class="detail-message" role="status"></p>
+              <section
+                class="place-detail"
+                th:id="|place-detail-${place.contentid}|"
+                hidden
+              >
+                <h4 class="detail-title"></h4>
                 <p class="detail-address"></p>
                 <p class="detail-overview"></p>
               </section>
             </li>
           </ul>
 
-          <nav class="pagination" th:if="${pageNo != null}" aria-label="검색 결과 페이지">
-            <a th:if="${pageNo > 1}"
-               th:href="@{/api/places(keyword=${keyword}, pageNo=${pageNo - 1})}">이전</a>
-            <span th:text="|${pageNo}페이지|"></span>
-            <a th:if="${pageNo * numOfRows lt totalCount}"
-               th:href="@{/api/places(keyword=${keyword}, pageNo=${pageNo + 1})}">다음</a>
+          <nav
+            class="page-buttons"
+            th:hidden="${totalCount == 0}"
+            aria-label="검색 결과 페이지"
+          >
+            <button type="button" class="previous-pages" disabled>이전</button>
+            <span class="page-numbers"></span>
+            <button
+              type="button"
+              class="next-pages"
+              th:disabled="${pageNo * numOfRows >= totalCount}"
+            >
+              다음
+            </button>
           </nav>
-        </section>
-
-        <!-- 여행계획 기능 연결 전: 레이아웃 자리만 표시 -->
-        <section class="panel selected-plan" aria-labelledby="plan-heading">
-          <h2 id="plan-heading">선택한 여행계획</h2>
-          <div class="plan-days" aria-label="방문일 선택">
-            <button type="button" disabled>미정</button>
-            <button type="button" disabled>1일차</button>
-            <button type="button" disabled>2일차</button>
-          </div>
-          <div class="plan-items empty-state">
-            <p>선택한 계획의 관광지와 방문 순서가 표시될 영역</p>
-          </div>
+          <p class="pagination-message" role="status" aria-live="polite"></p>
         </section>
       </div>
 
-      <section id="my-plans" class="panel my-plans" aria-labelledby="my-plans-heading">
-        <div class="section-heading">
-          <h2 id="my-plans-heading">내 계획</h2>
-          <button type="button" disabled>+ 새 계획</button>
+      <!-- 3. 내 계획 영역: 비로그인 화면의 자리만 표시 -->
+      <section class="my-plans">
+        <div class="my-plans-header">
+          <h2>내 계획</h2>
+
+          <form
+            th:if="${session.loginUserId != null}"
+            th:action="@{/plans}"
+            method="get"
+          >
+            <button type="submit">내 계획으로 이동</button>
+          </form>
         </div>
-        <div class="plan-list">
-          <div class="plan-placeholder">여행계획 목록 영역</div>
+
+        <!-- Codex 수정: 비로그인 상태에서는 기존 로그인 안내를 표시합니다. -->
+        <div class="login-guide" th:if="${session.loginUserId == null}">
+          <p>로그인하고 나만의 여행계획을 만들어보세요.</p>
+          <form th:action="@{/login}" method="get">
+            <button type="submit">로그인하기</button>
+          </form>
+        </div>
+
+        <!-- Codex 추가: 로그인 상태에서 서버가 전달한 내 계획을 표시합니다. -->
+        <!-- Codex 수정: 로그인한 사용자의 계획을 분류별 가로 카드로 표시합니다. -->
+        <div class="home-plans-content" th:if="${session.loginUserId != null}">
+          <!-- Codex 추가: 서버 요청 없이 받아둔 계획을 분류합니다. -->
+          <div class="home-plan-tabs" role="group" aria-label="내 계획 분류">
+            <button type="button" data-filter="all" aria-pressed="true">
+              전체
+            </button>
+            <button type="button" data-filter="upcoming" aria-pressed="false">
+              예정·진행 중
+            </button>
+            <button type="button" data-filter="past" aria-pressed="false">
+              지난 여행
+            </button>
+            <button type="button" data-filter="undated" aria-pressed="false">
+              날짜 미완성
+            </button>
+          </div>
+
+          <p class="my-plans-empty" th:hidden="${!#lists.isEmpty(planList)}">
+            해당 분류의 여행계획이 없습니다.
+          </p>
+
+          <!-- Codex 수정: JS가 목록을 다시 배치할 수 있도록 ul은 항상 만듭니다. -->
+          <ul class="my-plan-cards">
+            <!-- Codex 추가: 분류·정렬에 사용할 ID와 날짜를 카드에 저장합니다. -->
+            <li
+              th:each="plan : ${planList}"
+              th:attr="data-plan-id=${plan.id},
+                 data-start-date=${plan.startDate},
+                 data-end-date=${plan.endDate}"
+            >
+              <a
+                class="my-plan-card"
+                th:href="@{/plans/{planId}(planId=${plan.id})}"
+              >
+                <h3 th:text="${plan.title}">계획 제목</h3>
+                <p>
+                  <span
+                    th:text="${plan.startDate != null
+                          ? #temporals.format(plan.startDate, 'yyyy.MM.dd')
+                          : '출발일 미정'}"
+                  >
+                    출발일
+                  </span>
+                  <span> ~ </span>
+                  <span
+                    th:text="${plan.endDate != null
+                          ? #temporals.format(plan.endDate, 'yyyy.MM.dd')
+                          : '종료일 미정'}"
+                  >
+                    종료일
+                  </span>
+                </p>
+              </a>
+            </li>
+          </ul>
         </div>
       </section>
     </main>

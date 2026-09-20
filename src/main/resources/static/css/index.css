@@ -1,117 +1,236 @@
-/* 메인 화면 전용: common.css 다음에 연결 */
-.filter-row, .keyword-row, .place-summary, .plan-days {
+/* 메인 화면의 배치만 설정. 공통 헤더는 기존 common.css 사용 */
+
+/* 1. 검색 영역 */
+.home-page .search-area {
+  max-width: 34rem;
+  margin: 1.5rem auto;
+}
+
+.home-page .search-filters {
   display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-/* 관광지 검색 폼 */
-.search-section {
-  padding: 1.5rem 0;
-}
-
-.search-form {
-  max-width: 33.75rem;
-  margin: 0 auto;
-}
-
-.filter-row {
-  flex-wrap: wrap;
   justify-content: center;
-  margin-bottom: 0.625rem;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
-.filter-row select {
-  width: 10rem;
-  max-width: 100%;
+.home-page .search-keyword {
+  display: flex;
+  gap: 0.5rem;
 }
 
-.keyword-row input {
+.home-page .search-keyword input {
   flex: 1;
   min-width: 0;
 }
 
-/* 검색·상세 왼쪽 / 선택한 계획 오른쪽 */
-.workspace {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  align-items: stretch;
+/* 2. 가운데 영역: 내용이 적어도 내 계획 영역 위에 공간 확보 */
+.home-page .content-area {
+  min-height: 22rem;
 }
 
-/* 검색 결과와 관광지 상세 */
-.place-list {
-  margin: 0;
+.home-page .search-guide {
+  padding: 3rem 1rem;
+  border: 1px solid #888;
+  text-align: center;
+}
+
+.home-page .search-guide p {
+  margin-top: 0.5rem;
+}
+
+/* 3. 검색 결과 예시: HTML의 결과 영역 주석을 해제하면 사용 */
+.home-page .search-results {
+  padding: 1rem;
+  border: 1px solid #888;
+}
+
+.home-page .place-list {
+  margin: 0.75rem 0;
   padding: 0;
   list-style: none;
 }
 
-.place-item {
-  margin-bottom: 0.625rem;
-  padding: 0.625rem;
+.home-page .place-item {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  padding: 0.75rem;
   border: 1px solid #aaa;
 }
 
-.place-text {
+.home-page .place-image {
+  display: grid;
+  place-items: center;
+  width: 5rem;
+  height: 4rem;
+  border: 1px solid #aaa;
+}
+
+.home-page .place-info {
   flex: 1;
+  min-width: 7rem;
+  overflow-wrap: anywhere;
+}
+
+.home-page .page-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+/* 4. 아래쪽 내 계획 영역 */
+.home-page .my-plans {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid #888;
+}
+
+.home-page .login-guide {
+  padding: 1rem;
+  text-align: center;
+}
+
+.home-page .login-guide button {
+  margin-top: 0.5rem;
+}
+
+/* API에서 받은 25개 중 선택한 페이지의 5개만 표시 */
+.home-page [hidden] {
+  display: none;
+}
+
+.home-page .page-numbers {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.home-page .page-numbers button[aria-current="page"] {
+  font-weight: bold;
+  border: 2px solid #222;
+}
+
+/* 상세정보는 해당 관광지의 이름·주소·버튼 아래에 표시 */
+.home-page .place-detail,
+.home-page .detail-message {
+  flex-basis: 100%;
   min-width: 0;
   overflow-wrap: anywhere;
 }
 
-.place-title {
-  font-weight: bold;
-}
-
-.place-summary button {
-  flex-shrink: 0;
-}
-
-.place-detail {
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
+.home-page .place-detail {
   border-top: 1px solid #aaa;
-  overflow-wrap: anywhere;
+  padding-top: 0.75rem;
 }
 
-.place-detail p {
+.home-page .detail-title {
+  margin: 0 0 0.5rem;
+}
+
+.home-page .detail-overview {
   margin-top: 0.5rem;
-}
-
-.detail-overview {
   white-space: pre-line;
 }
 
-/* 메인 화면 안의 선택한 계획 영역 */
-.plan-days {
-  margin: 0.75rem 0;
-  flex-wrap: wrap;
+.home-page .detail-message:empty {
+  display: none;
 }
 
-.plan-items {
-  min-height: 15rem;
+/* Codex 추가: 이미지를 기존 이미지 영역에 맞추고 비율을 유지합니다.
+   영역과 비율이 다르면 이미지 가장자리가 일부 잘립니다. */
+.place-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+
+/* Codex 추가: 제목은 왼쪽, 이동 버튼은 오른쪽 끝에 배치합니다. */
+.home-page .my-plans-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+/* Codex 추가: 기본 여백을 없애 제목과 버튼의 세로 정렬을 맞춥니다. */
+.home-page .my-plans-header h2,
+.home-page .my-plans-header form {
+  margin: 0;
+}
+
+
+/* Codex 수정: 계획 카드를 한 줄로 배치하고,
+   영역 너비를 넘으면 가로 스크롤로 볼 수 있게 합니다. */
+.home-page .my-plan-cards {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 1rem;
+  overflow-x: auto;
+  margin: 1rem 0 0;
+  padding: 0 0 0.75rem;
+  list-style: none;
+}
+
+/* Codex 수정: 카드가 줄어들지 않도록 너비를 고정합니다.
+   좁은 화면에서는 목록 영역 너비의 85%를 사용합니다. */
+.home-page .my-plan-cards > li {
+  flex: 0 0 15rem;
+  max-width: 85%;
+  min-width: 0;
+}
+
+/* Codex 추가: 카드 전체를 클릭할 수 있는 네모 영역으로 표시합니다. */
+.home-page .my-plan-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  height: 100%;
+  min-height: 8rem;
+  padding: 1rem;
   border: 1px solid #aaa;
+  border-radius: 0.5rem;
+  color: inherit;
+  text-decoration: none;
+  overflow-wrap: anywhere;
 }
 
-/* 메인 화면 하단의 내 계획 영역 */
-.my-plans {
+.home-page .my-plan-card h3 {
+  margin: 0 0 0.75rem;
+}
+
+.home-page .my-plan-card p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* Codex 추가: 마우스나 키보드로 선택한 카드를 구분합니다. */
+.home-page .my-plan-card:hover,
+.home-page .my-plan-card:focus-visible {
+  background-color: #f5f5f5;
+  border-color: #555;
+}
+
+.home-page .my-plans-empty {
+  margin: 1rem 0 0;
+}
+
+
+/* Codex 추가: 계획 분류 버튼을 배치하고 좁은 화면에서는 줄바꿈합니다. */
+.home-page .home-plan-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   margin-top: 1rem;
 }
 
-.plan-list {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.75rem;
-}
-
-.plan-placeholder {
-  min-height: 5.625rem;
-  padding: 0.75rem;
-  border: 1px dashed #aaa;
-}
-
-/* 메인 화면의 모바일 배치 */
-@media (max-width: 43.75rem) {
-  .workspace, .plan-list {
-    grid-template-columns: 1fr;
-  }
+/* Codex 추가: 선택한 분류 버튼을 구분합니다. */
+.home-page .home-plan-tabs button[aria-pressed="true"] {
+  font-weight: bold;
+  outline: 2px solid currentColor;
+  outline-offset: 1px;
 }

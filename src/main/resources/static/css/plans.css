@@ -448,3 +448,95 @@
   font-weight: bold;
   padding: 0.375rem 1rem;
 }
+/* 계획 목록의 관리 버튼 스타일 (plans.html에서 분리) */
+.plan-list-container .col-btn {
+  flex: 1.5;
+}
+
+.plan-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.plan-actions form {
+  margin: 0;
+}
+
+.plan-actions button {
+  white-space: nowrap;
+}
+
+.plan-actions .btn-delete-plan {
+  color: #b42318;
+  border-color: #b42318;
+}
+
+.plans-pagination {
+  flex-wrap: wrap;
+}
+
+.plans-pagination .active {
+  border: 1px solid #222;
+  padding: 0.1rem 0.5rem;
+}
+
+.plan-form .form-error {
+  color: #b42318;
+  margin-bottom: 1rem;
+}
+
+/* Codex 수정: JS에서 숨긴 목록을 감추고 기존 페이지 링크 모양을 버튼에도 적용합니다. */
+.plans-page [hidden] {
+  display: none;
+}
+
+.plans-pagination button {
+  color: inherit;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 0.1rem 0.5rem;
+}
+
+.plans-pagination button.active {
+  border-color: #222;
+}
+/* Codex 수정: 계획 수정 화면의 읽기 전용 일정 목록에만 적용합니다.
+   연도가 포함된 날짜의 너비를 확보하고, 긴 장소명과 메모는 줄바꿈합니다. */
+.schedule-preview-section .col-s-date {
+  width: 7rem;
+  flex-shrink: 0;
+}
+
+.schedule-preview-section .col-order {
+  flex-shrink: 0;
+}
+
+.schedule-preview-section .col-place,
+.schedule-preview-section .col-memo {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.schedule-preview-section .col-memo {
+  white-space: pre-wrap;
+}
+
+/* Codex 작성: 순서 편집 모드에서 숨긴 관리 버튼과 화살표가 기존 flex 스타일로 다시 표시되지 않게 합니다. */
+#schedule-order [hidden] {
+  display: none;
+}
+
+#schedule-order button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+#order-status {
+  min-height: 1.2em;
+}
+
+#order-status.order-error {
+  color: #b42318;
+}

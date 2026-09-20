@@ -1,7 +1,8 @@
 package com.machadaero.travelplan.service;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
+
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ public class PlanService {
 
     public void createPlan(Long loginUserId, PlanCreateRequestDto requestDto) {
         System.out.println("PlanService - createPlan()");
+        validateDates(requestDto.getStartDate(), requestDto.getEndDate());
 
         User user = userRepository.findById(loginUserId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
@@ -48,15 +50,12 @@ public class PlanService {
         System.out.println("DB 저장 완료! 생성된 계획 ID: " + travelPlan.getId());
     }
 
+    // Codex 수정: Page 대신 계획 DTO 전체 목록을 반환하고, 화면 처리는 plans.js에 맡깁니다.
     public List<PlanResponseDto> getPlans(Long userId) {
-        System.out.println("PlanService - getPlans()");
-        List<PlanResponseDto> planList = new ArrayList<>();
-
-        List<TravelPlan> travelPlans = travelPlanRepository.findAllByUser_Id(userId);
-        for (TravelPlan travelPlan : travelPlans) {
-            planList.add(new PlanResponseDto(travelPlan));
-        }
-        return planList;
+        // 사용자 ID로 조회하므로 다른 사용자의 계획은 포함되지 않습니다.
+        List<TravelPlan> plans = travelPlanRepository.findAllByUser_Id(userId);
+        // 계획의 ID·제목·날짜만 DTO로 변환합니다. PlanItem은 조회하지 않습니다.
+        return plans.stream().map(PlanResponseDto::new).toList();
     }
 
     public PlanResponseDto getPlan(Long loginUserId, Long planId) {
@@ -80,11 +79,18 @@ public class PlanService {
         if (!loginUserId.equals(travelPlan.getUser().getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "본인의 계획만 조회하세요");
         }
+        validateDates(requestDto.getStartDate(), requestDto.getEndDate());
         travelPlan.setTitle(requestDto.getTitle());
         travelPlan.setStartDate(requestDto.getStartDate());
         travelPlan.setEndDate(requestDto.getEndDate());
 
         travelPlanRepository.save(travelPlan);
+    }
+
+    private void validateDates(LocalDate startDate, LocalDate endDate) {
+        if (startDate != null && endDate != null && endDate.isBefore(startDate)) {
+            throw new IllegalArgumentException("종료일은 시작일보다 빠를 수 없습니다.");
+        }
     }
 
     @Transactional 

@@ -7,10 +7,11 @@
   <head>
     <th:block th:fragment="pageHead">
       <link rel="stylesheet" th:href="@{/css/plans.css}" />
+      <script th:src="@{/js/plan-form.js}" defer></script>
     </th:block>
   </head>
   <body>
-    <main>
+    <main th:with="values=${formData != null ? formData : planDto}">
       <div class="plan-form">
         
         <!-- 상단 컨트롤 바 -->
@@ -29,33 +30,61 @@
 
         <!-- 중앙 입력 영역 -->
         <div class="plan-form-body">
+          <p class="form-error" th:if="${errorMessage != null}" th:text="${errorMessage}" role="alert"></p>
           <div class="form-group">
             <label for="title">제목 <span class="required">*</span></label>
-            <input type="text" id="title" name="title" th:attr="form=${planDto != null ? 'edit-plan-form' : 'create-plan-form'}" th:value="${planDto != null ? planDto.title : ''}" placeholder="여행 제목을 입력하세요" required autofocus />
+            <input type="text" id="title" name="title" th:attr="form=${planDto != null ? 'edit-plan-form' : 'create-plan-form'}" th:value="${values != null ? values.title : ''}" placeholder="여행 제목을 입력하세요" required autofocus />
           </div>
 
           <div class="form-group">
             <label>여행 기간 (선택)</label>
             <div class="date-range">
-              <input type="date" id="startDate" name="startDate" th:attr="form=${planDto != null ? 'edit-plan-form' : 'create-plan-form'}" th:value="${planDto != null and planDto.startDate != null ? #temporals.format(planDto.startDate, 'yyyy-MM-dd') : ''}" />
+              <input type="date" id="startDate" name="startDate" th:attr="form=${planDto != null ? 'edit-plan-form' : 'create-plan-form'}" th:value="${values != null and values.startDate != null ? #temporals.format(values.startDate, 'yyyy-MM-dd') : ''}" />
               <span>~</span>
-              <input type="date" id="endDate" name="endDate" th:attr="form=${planDto != null ? 'edit-plan-form' : 'create-plan-form'}" th:value="${planDto != null and planDto.endDate != null ? #temporals.format(planDto.endDate, 'yyyy-MM-dd') : ''}" />
+              <input type="date" id="endDate" name="endDate" th:attr="form=${planDto != null ? 'edit-plan-form' : 'create-plan-form'}" th:value="${values != null and values.endDate != null ? #temporals.format(values.endDate, 'yyyy-MM-dd') : ''}" />
             </div>
             <p class="help-text">기간은 나중에 입력할 수 있습니다.</p>
           </div>
         </div>
       </div>
 
-      <!-- 하단 안내 영역 (계획 저장 전) -->
+      <!-- Codex 수정: 새 계획은 저장 안내를, 기존 계획 수정 시에는 해당 계획의 일정을 읽기 전용으로 표시합니다. -->
       <section class="schedule-preview-section">
         <div class="section-heading">
           <h3>전체 일정</h3>
-          <button type="button" disabled>+ 일정 추가</button>
         </div>
-        <div class="schedule-empty-box">
+
+        <!-- Codex 수정: 아직 저장하지 않은 계획에는 조회할 일정이 없으므로 안내만 표시합니다. -->
+        <div class="schedule-empty-box" th:if="${planDto == null}">
           <p>계획을 먼저 저장하면 일정을 추가할 수 있습니다.</p>
         </div>
-        <p class="help-text-bottom">계획 생성 후 위와 같은 화면에서 일정을 추가합니다.</p>
+
+        <th:block th:if="${planDto != null}">
+          <!-- Codex 수정: 일정이 없는 상태와 등록된 일정이 있는 상태를 구분합니다. -->
+          <div class="schedule-empty-box" th:if="${#lists.isEmpty(planItemList)}">
+            <p>등록된 일정이 없습니다.</p>
+          </div>
+
+          <div class="schedule-list-container" th:unless="${#lists.isEmpty(planItemList)}">
+            <div class="schedule-header list-header">
+              <span class="col-order">순서</span>
+              <span class="col-s-date">방문 날짜</span>
+              <span class="col-place">방문 장소</span>
+              <span class="col-memo">일정 내용</span>
+            </div>
+            <!-- Codex 수정: 서버가 전달한 일정 목록을 반복 출력합니다. 입력칸이나 일정 변경 버튼은 두지 않습니다. -->
+            <ul class="schedule-list">
+              <li class="schedule-item" th:each="planItem : ${planItemList}">
+                <span class="col-order" th:text="${planItem.sortOrder}">1</span>
+                <span class="col-s-date"
+                      th:text="${planItem.visitDate != null ? #temporals.format(planItem.visitDate, 'yyyy.MM.dd') : '미정'}">미정</span>
+                <span class="col-place" th:text="${planItem.placeName}">방문 장소</span>
+                <span class="col-memo" th:text="${#strings.isEmpty(planItem.memo) ? '-' : planItem.memo}">일정 내용</span>
+              </li>
+            </ul>
+          </div>
+          <p class="help-text-bottom">일정은 확인용입니다. 일정 추가·수정·삭제는 '일정 보기' 화면에서 할 수 있습니다.</p>
+        </th:block>
       </section>
     </main>
   </body>

@@ -7,6 +7,8 @@
   <head>
     <th:block th:fragment="pageHead">
       <link rel="stylesheet" th:href="@{/css/plans.css}" />
+      <!-- Codex 작성: 순서 편집·취소·저장은 별도 JS에서 처리합니다. -->
+      <script th:src="@{/js/plan-order.js}" defer></script>
     </th:block>
   </head>
   <body>
@@ -27,18 +29,22 @@
       </div>
 
       <!-- 세부 일정(방문 장소) 영역 -->
-      <section class="schedule-section">
+      <!-- Codex 수정: 저장 URL을 JS에 전달하고, 순서 편집 중에는 일정 추가·수정·삭제를 잠시 숨깁니다. -->
+      <section class="schedule-section" id="schedule-order"
+               th:attr="data-order-url=@{/plans/{planId}/items/order(planId=${planId})}">
         <div class="section-heading">
           <h3>전체 일정</h3>
-          <!-- 상단 '+ 일정 추가' 버튼 -->
+          <!-- Codex 수정: 상단에는 일정 추가 버튼만 남겨 기존 순서 편집 버튼이 있던 오른쪽에 배치합니다. -->
           <button
             type="button"
             class="btn-outline"
+            data-order-normal
             onclick="openScheduleModal()"
           >
             + 일정 추가
           </button>
         </div>
+        <p id="order-status" class="help-text-bottom" role="status" aria-live="polite"></p>
 
         <div class="schedule-list-container">
           <!-- 리스트 헤더 -->
@@ -47,12 +53,20 @@
             <span class="col-s-date">날짜</span>
             <span class="col-place">방문장소</span>
             <span class="col-memo">일정 내용</span>
-            <span class="col-manage">관리</span>
+            <!-- Codex 수정: 기존 '관리' 제목 대신 순서 편집 버튼을 배치하고, 저장·취소도 같은 자리에서 표시합니다. -->
+            <div class="col-manage">
+              <button type="button" class="btn-outline" id="order-edit"
+                      th:disabled="${#lists.size(planItemList) < 2}">순서 편집</button>
+              <button type="button" class="btn-solid" id="order-save" hidden>순서 저장</button>
+              <button type="button" class="btn-outline" id="order-cancel" hidden>취소</button>
+            </div>
           </div>
 
           <!-- 일정 목록 -->
           <ul class="schedule-list">
-            <li class="schedule-item" th:each="planItem : ${planItemList}">
+            <!-- Codex 수정: 일정 ID로 화면의 최종 순서를 수집합니다. -->
+            <li class="schedule-item" th:each="planItem : ${planItemList}"
+                th:attr="data-order-item-id=${planItem.id}">
               <span class="col-order" th:text="${planItem.sortOrder}">1</span>
               <span
                 class="col-s-date"
@@ -61,7 +75,7 @@
               <span class="col-place" th:text="${planItem.placeName}">성산일출봉</span>
               <span class="col-memo" th:text="${planItem.memo}">오전 산책</span>
               <div class="col-manage">
-                <div class="manage-links">
+                <div class="manage-links" data-order-normal>
                   <a href="#">상세</a> &middot;
                   <!-- 리스트 안의 '수정' 버튼 -->
                   <a
@@ -91,8 +105,9 @@
                     <button type="submit" class="btn-outline">삭제</button>
                   </form>
                 </div>
-                <button type="button" class="btn-move">&uarr;</button>
-                <button type="button" class="btn-move">&darr;</button>
+                <!-- Codex 수정: 화살표는 편집 모드에서만 표시하며, 클릭할 때는 화면만 변경합니다. -->
+                <button type="button" class="btn-move" data-order-move="up" aria-label="이 일정을 위로 이동" hidden>&uarr;</button>
+                <button type="button" class="btn-move" data-order-move="down" aria-label="이 일정을 아래로 이동" hidden>&darr;</button>
               </div>
             </li>
           </ul>

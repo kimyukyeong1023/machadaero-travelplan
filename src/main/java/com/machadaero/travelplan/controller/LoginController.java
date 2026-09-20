@@ -1,24 +1,29 @@
 package com.machadaero.travelplan.controller;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.machadaero.travelplan.entity.User;
 import com.machadaero.travelplan.service.LoginService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 public class LoginController {
     @Value("${KAKAO_REST_API_KEY_MACHADAERO}")
     String kakaoRestApiKey;
 
-    LoginService loginService;
+    // Codex 수정: 로그인에 필요한 서비스는 LoginService 하나만 사용합니다.
+    private final LoginService loginService;
 
     public LoginController(LoginService loginService) {
         this.loginService = loginService;
@@ -30,33 +35,180 @@ public class LoginController {
         return "login";
     }
 
+    // Codex 수정: Kakao 로그인 버튼 → state 생성 → 로그인 URL 생성 → 해당 회사 로그인 화면으로 이동.
     @GetMapping("/login/kakao")
-    public String kakaoLogin() {
+    public String kakaoLogin(HttpServletRequest request, RedirectAttributes redirectAttributes) {
         System.out.println("LoginController - kakaoLogin()");
-        String loginUrl = loginService.CreatLoginUrl();
-
-        return "redirect:" + loginUrl;
+        String state = UUID.randomUUID().toString();
+        try {
+            String loginUrl = loginService.createKakaoLoginUrl(state);
+            saveState("kakao", state, request);
+            return "redirect:" + loginUrl;
+        } catch (IllegalStateException exception) {
+            return loginFailure(redirectAttributes, "이 로그인은 아직 준비 중입니다. 다른 로그인 방법을 이용해 주세요.");
+        }
     }
 
+    // Codex 수정: Kakao에서 돌아오면 아래 순서대로 직접 호출합니다.
     @GetMapping("/login/kakao/callback")
-    public String kakaoCallback(@RequestParam("code") String code,
-            HttpServletRequest request) {
+    public String kakaoCallback(@RequestParam(value = "code", required = false) String code,
+            @RequestParam(value = "state", required = false) String state,
+            @RequestParam(value = "error", required = false) String error,
+            HttpServletRequest request, RedirectAttributes redirectAttributes) {
         System.out.println("LoginController - kakaoCallback()");
-        System.out.println("인가코드: " + code);
-        User user = loginService.findOrCreateUser(code);
+        if (!isValidState("kakao", state, request)) {
+            return loginFailure(redirectAttributes, "로그인 요청이 만료되었거나 올바르지 않습니다. 다시 로그인해 주세요.");
+        }
+        if (error != null || code == null || code.isBlank()) {
+            return loginFailure(redirectAttributes, "로그인이 취소되었거나 승인되지 않았습니다. 다시 시도해 주세요.");
+        }
 
-        // 기존 세션을 가져오거나 새로 생성
+        try {
+            // 1. 인가코드로 토큰 받기 → 2. 토큰으로 제공사의 사용자 ID 받기
+            String accessToken = loginService.requestKakaoAccessToken(code);
+            String providerUserId = loginService.requestKakaoUserInfo(accessToken);
+            // 3. 우리 회원 찾기/생성 → 4. 우리 회원 번호를 세션에 저장
+            User user = loginService.findOrCreateUser("KAKAO", providerUserId);
+            saveLoginSession(user, request);
+            return "redirect:/";
+        } catch (RestClientException | IllegalStateException | DataAccessException exception) {
+            // Codex 수정: 실패 원문의 토큰·개인정보는 출력하지 않고 사용자에게 재시도를 안내합니다.
+            return loginFailure(redirectAttributes, "로그인 처리에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+        }
+    }
+
+    // Codex 수정: Naver 로그인 버튼 → state 생성 → 로그인 URL 생성 → 해당 회사 로그인 화면으로 이동.
+    @GetMapping("/login/naver")
+    public String naverLogin(HttpServletRequest request, RedirectAttributes redirectAttributes) {
+        System.out.println("LoginController - naverLogin()");
+        String state = UUID.randomUUID().toString();
+        try {
+            String loginUrl = loginService.createNaverLoginUrl(state);
+            saveState("naver", state, request);
+            return "redirect:" + loginUrl;
+        } catch (IllegalStateException exception) {
+            return loginFailure(redirectAttributes, "이 로그인은 아직 준비 중입니다. 다른 로그인 방법을 이용해 주세요.");
+        }
+    }
+
+    // Codex 수정: Naver에서 돌아오면 아래 순서대로 직접 호출합니다.
+    @GetMapping("/login/naver/callback")
+    public String naverCallback(@RequestParam(value = "code", required = false) String code,
+            @RequestParam(value = "state", required = false) String state,
+            @RequestParam(value = "error", required = false) String error,
+            HttpServletRequest request, RedirectAttributes redirectAttributes) {
+        System.out.println("LoginController - naverCallback()");
+        if (!isValidState("naver", state, request)) {
+            return loginFailure(redirectAttributes, "로그인 요청이 만료되었거나 올바르지 않습니다. 다시 로그인해 주세요.");
+        }
+        if (error != null || code == null || code.isBlank()) {
+            return loginFailure(redirectAttributes, "로그인이 취소되었거나 승인되지 않았습니다. 다시 시도해 주세요.");
+        }
+
+        try {
+            // 1. 인가코드로 토큰 받기 → 2. 토큰으로 제공사의 사용자 ID 받기
+            String accessToken = loginService.requestNaverAccessToken(code, state);
+            String providerUserId = loginService.requestNaverUserInfo(accessToken);
+            // 3. 우리 회원 찾기/생성 → 4. 우리 회원 번호를 세션에 저장
+            User user = loginService.findOrCreateUser("NAVER", providerUserId);
+            saveLoginSession(user, request);
+            return "redirect:/";
+        } catch (RestClientException | IllegalStateException | DataAccessException exception) {
+            // Codex 수정: 실패 원문의 토큰·개인정보는 출력하지 않고 사용자에게 재시도를 안내합니다.
+            return loginFailure(redirectAttributes, "로그인 처리에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+        }
+    }
+
+    // Codex 수정: Google 로그인 버튼 → state 생성 → 로그인 URL 생성 → 해당 회사 로그인 화면으로 이동.
+    @GetMapping("/login/google")
+    public String googleLogin(HttpServletRequest request, RedirectAttributes redirectAttributes) {
+        System.out.println("LoginController - googleLogin()");
+        String state = UUID.randomUUID().toString();
+        try {
+            String loginUrl = loginService.createGoogleLoginUrl(state);
+            saveState("google", state, request);
+            return "redirect:" + loginUrl;
+        } catch (IllegalStateException exception) {
+            return loginFailure(redirectAttributes, "이 로그인은 아직 준비 중입니다. 다른 로그인 방법을 이용해 주세요.");
+        }
+    }
+
+    // Codex 수정: Google에서 돌아오면 아래 순서대로 직접 호출합니다.
+    @GetMapping("/login/google/callback")
+    public String googleCallback(@RequestParam(value = "code", required = false) String code,
+            @RequestParam(value = "state", required = false) String state,
+            @RequestParam(value = "error", required = false) String error,
+            HttpServletRequest request, RedirectAttributes redirectAttributes) {
+        System.out.println("LoginController - googleCallback()");
+        if (!isValidState("google", state, request)) {
+            return loginFailure(redirectAttributes, "로그인 요청이 만료되었거나 올바르지 않습니다. 다시 로그인해 주세요.");
+        }
+        if (error != null || code == null || code.isBlank()) {
+            return loginFailure(redirectAttributes, "로그인이 취소되었거나 승인되지 않았습니다. 다시 시도해 주세요.");
+        }
+
+        try {
+            // 1. 인가코드로 토큰 받기 → 2. 토큰으로 제공사의 사용자 ID 받기
+            String accessToken = loginService.requestGoogleAccessToken(code);
+            String providerUserId = loginService.requestGoogleUserInfo(accessToken);
+            // 3. 우리 회원 찾기/생성 → 4. 우리 회원 번호를 세션에 저장
+            User user = loginService.findOrCreateUser("GOOGLE", providerUserId);
+            saveLoginSession(user, request);
+            return "redirect:/";
+        } catch (RestClientException | IllegalStateException | DataAccessException exception) {
+            // Codex 수정: 실패 원문의 토큰·개인정보는 출력하지 않고 사용자에게 재시도를 안내합니다.
+            return loginFailure(redirectAttributes, "로그인 처리에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+        }
+    }
+
+    // Codex 수정: 아래 보조 메서드는 세 제공사에서 똑같이 사용하는 세션 처리만 담당합니다.
+    // state는 로그인 버튼을 누른 브라우저가 맞는지 확인할 임의의 문자열입니다.
+    private void saveState(String provider, String state, HttpServletRequest request) {
         HttpSession session = request.getSession();
-        // 로그인 전에 누군가 알고 있던 세션 ID를 로그인 후에도 이용하는 공격을 막기 위해서
-        request.changeSessionId();
+        synchronized (session) { // 동시에 시작된 요청의 state와 만료 시간이 섞이지 않게 저장합니다.
+            session.setAttribute("oauthState:" + provider, state);
+            session.setAttribute("oauthStateExpiresAt:" + provider, System.currentTimeMillis() + 10 * 60 * 1000L);
+        }
+    }
 
-        // 세션에 "loginUserId"라는 이름으로 우리 DB 회원 번호인 Long 값을 저장해.
-        // 카카오 사용자 ID나 액세스 토큰을 넣는 게 아니야.
+    private boolean isValidState(String provider, String state, HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            return false;
+        }
+
+        synchronized (session) { // 같은 state를 동시에 두 번 사용하지 못하도록 확인과 삭제를 함께 합니다.
+            String savedState = (String) session.getAttribute("oauthState:" + provider);
+            Long expiresAt = (Long) session.getAttribute("oauthStateExpiresAt:" + provider);
+            session.removeAttribute("oauthState:" + provider);
+            session.removeAttribute("oauthStateExpiresAt:" + provider);
+
+            if (state == null || savedState == null || expiresAt == null) {
+                return false;
+            }
+            if (System.currentTimeMillis() >= expiresAt) {
+                return false;
+            }
+            return savedState.equals(state);
+        }
+    }
+
+    private void saveLoginSession(User user, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        request.changeSessionId();
         session.setAttribute("loginUserId", user.getId());
 
-        // 쿠키에 세션 ID를 넣어 브라우저로 보내는 일은 톰캣이 처리
-        return "redirect:/";
+        // Codex 수정: 로그인이 끝났으므로 다른 탭에 남아 있던 로그인 요청도 정리합니다.
+        String[] providers = {"kakao", "naver", "google"};
+        for (String provider : providers) {
+            session.removeAttribute("oauthState:" + provider);
+            session.removeAttribute("oauthStateExpiresAt:" + provider);
+        }
+    }
 
+    private String loginFailure(RedirectAttributes redirectAttributes, String message) {
+        redirectAttributes.addFlashAttribute("loginError", message);
+        return "redirect:/login";
     }
 
     @PostMapping("/logout")

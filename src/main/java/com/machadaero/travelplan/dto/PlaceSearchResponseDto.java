@@ -13,6 +13,9 @@ public class PlaceSearchResponseDto {
     String title;
     String address;
 
+    String imageUrl;
+    String thumbnailUrl;
+
 
 
 

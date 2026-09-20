@@ -1,6 +1,11 @@
 package com.machadaero.travelplan.service;
 
 import java.util.List;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import com.machadaero.travelplan.dto.PlanItemOrderRequestDto;
 
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.PageRequest;
@@ -77,6 +82,44 @@ public class PlanItemService {
                 List<PlanItem> planList = planItemRepository.findByTravelPlanOrderBySortOrderAsc(travelPlan);
                 return planList;
 
+        }
+
+        // Codex 작성: 전체 순서를 검증한 뒤 1, 2, 3...으로 한 트랜잭션에서 저장합니다.
+        @Transactional
+        public void reorderPlanItems(Long loginUserId, Long planId, PlanItemOrderRequestDto requestDto) {
+                System.out.println("PlanItemService - reorderPlanItems()");
+                if (loginUserId == null) {
+                        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
+                }
+                TravelPlan travelPlan = travelPlanRepository.findByIdForOrderUpdate(planId)
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "여행계획이 없습니다."));
+                if (!loginUserId.equals(travelPlan.getUser().getId())) {
+                        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "본인의 여행계획만 수정할 수 있습니다.");
+                }
+                List<PlanItem> items = planItemRepository.findByTravelPlanOrderBySortOrderAsc(travelPlan);
+                List<Long> currentIds = items.stream().map(PlanItem::getId).toList();
+                if (requestDto == null || requestDto.getItemIds() == null || requestDto.getOriginalItemIds() == null) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "일정 순서 목록이 필요합니다.");
+                }
+
+                // Codex 작성: 다른 탭에서 순서나 일정 목록을 변경한 경우 오래된 화면의 저장을 거부합니다.
+                if (!currentIds.equals(requestDto.getOriginalItemIds())) {
+                        throw new ResponseStatusException(HttpStatus.CONFLICT, "일정이 변경되었습니다. 새로고침 후 다시 편집해 주세요.");
+                }
+                List<Long> requestedIds = requestDto.getItemIds();
+                if (requestedIds.size() != currentIds.size()
+                                || new HashSet<>(requestedIds).size() != requestedIds.size()
+                                || !new HashSet<>(requestedIds).equals(new HashSet<>(currentIds))) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "해당 계획의 모든 일정을 중복 없이 보내야 합니다.");
+                }
+
+                // Codex 작성: 검증을 모두 통과한 후에만 순번을 변경합니다. 제목·날짜·메모는 변경하지 않습니다.
+                Map<Long, PlanItem> itemsById = items.stream()
+                                .collect(Collectors.toMap(PlanItem::getId, Function.identity()));
+                for (int index = 0; index < requestedIds.size(); index++) {
+                        itemsById.get(requestedIds.get(index)).setSortOrder(index + 1);
+                }
+                planItemRepository.saveAll(items);
         }
 
         @Transactional

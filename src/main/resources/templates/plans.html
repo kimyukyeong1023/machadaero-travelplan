@@ -7,35 +7,12 @@
   <head>
     <th:block th:fragment="pageHead">
       <link rel="stylesheet" th:href="@{/css/plans.css}" />
-      <style>
-        .plan-list-container .col-btn {
-          flex: 1.5;
-        }
-
-        .plan-actions {
-          display: flex;
-          justify-content: flex-end;
-          flex-wrap: wrap;
-          gap: 0.5rem;
-        }
-
-        .plan-actions form {
-          margin: 0;
-        }
-
-        .plan-actions button {
-          white-space: nowrap;
-        }
-
-        .plan-actions .btn-delete-plan {
-          color: #b42318;
-          border-color: #b42318;
-        }
-      </style>
+      <!-- Codex 수정: 전체 계획의 분류·정렬·페이징 스크립트 연결 -->
+      <script th:src="@{/js/plans.js}" defer></script>
     </th:block>
   </head>
   <body>
-    <main>
+    <main class="plans-page">
       <!-- 상단 헤더 영역 -->
       <div class="plan-header-wrapper">
         <div class="plan-header-center">
@@ -45,11 +22,16 @@
         <button type="button" class="btn-new-plan" onclick="location.href='/plans/new'">+ 새 계획</button>
       </div>
 
-      <!-- 분류 탭 -->
+      <!-- Codex 수정: data-filter로 JS에서 분류를 전환합니다. -->
       <div class="plan-tabs">
-        <a href="#" class="active">전체</a>
-        <a href="#">예정된 여행</a>
-        <a href="#">날짜 미정</a>
+        <a th:href="@{/plans(filter='all')}"
+           data-filter="all">전체</a>
+        <a th:href="@{/plans(filter='upcoming')}"
+           data-filter="upcoming">예정·진행 중</a>
+        <a th:href="@{/plans(filter='past')}"
+           data-filter="past">지난 여행</a>
+        <a th:href="@{/plans(filter='undated')}"
+           data-filter="undated">날짜 미완성</a>
       </div>
 
       <!-- 리스트 영역 -->
@@ -61,9 +43,10 @@
           <span class="col-btn">관리</span>
         </div>
 
-        <!-- 계획 목록 -->
+        <!-- Codex 수정: 전체 계획을 전달하고, JS가 날짜 속성으로 정렬한 뒤 10개만 표시합니다. -->
         <ul class="plan-list">
-          <li class="plan-item" th:each="plan : ${planList}">
+          <li class="plan-item" th:each="plan, status : ${planList}" th:hidden="${status.index >= 10}"
+              th:attr="data-plan-id=${plan.id},data-start-date=${plan.startDate},data-end-date=${plan.endDate}">
             <div class="col-title"><h3 th:text="${plan.title}">여행계획</h3></div>
             <div class="col-date">
               <span th:text="${plan.startDate != null ? #temporals.format(plan.startDate, 'yyyy. MM. dd') : '날짜 미정'}">날짜 미정</span>
@@ -82,25 +65,19 @@
                 method="post"
                 th:action="@{/plans/{planId}/delete(planId=${plan.id})}"
                 onsubmit="return confirm('이 여행계획을 삭제하시겠습니까?');"
-              >
+              > 
                 <button type="submit" class="btn-outline btn-delete-plan">계획 삭제</button>
               </form>
             </div>
           </li>
-          <li class="plan-item" th:if="${#lists.isEmpty(planList)}">
-            <div class="col-title">등록된 여행계획이 없습니다.</div>
+          <li class="plan-item plans-empty" th:hidden="${!#lists.isEmpty(planList)}">
+            <div class="col-title">해당 분류의 여행계획이 없습니다.</div>
           </li>
         </ul>
       </div>
 
-      <!-- 페이징 (common.css의 .pagination 활용) -->
-      <nav class="pagination" aria-label="페이지 이동">
-        <a href="#">&lt;</a>
-        <a href="#" class="active" style="border: 1px solid #222; padding: 0.1rem 0.5rem;">1</a>
-        <a href="#">2</a>
-        <a href="#">3</a>
-        <a href="#">&gt;</a>
-      </nav>
+      <!-- Codex 수정: JS가 페이지 번호를 만듭니다. 결과가 없어도 1페이지를 표시합니다. -->
+      <nav class="pagination plans-pagination" aria-label="계획 목록 페이지"></nav>
     </main>
   </body>
 </html>

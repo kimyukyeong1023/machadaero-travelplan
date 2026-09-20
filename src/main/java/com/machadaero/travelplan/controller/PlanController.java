@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.machadaero.travelplan.dto.PlanCreateRequestDto;
 import com.machadaero.travelplan.dto.PlanResponseDto;
@@ -33,6 +32,7 @@ public class PlanController {
     }
 
     @GetMapping("/plans")
+    // Codex 수정: 전체 계획을 한 번 전달하고, 분류·정렬·페이지 이동은 브라우저에서 처리합니다.
     public String plans(HttpServletRequest request, Model model) {
         System.out.println("PlanController - plans()");
 
@@ -48,8 +48,8 @@ public class PlanController {
             return "redirect:/login";
         }
 
-        List<PlanResponseDto> planResponseDtoList = planService.getPlans(loginUserId);
-        model.addAttribute("planList", planResponseDtoList);
+        List<PlanResponseDto> plans = planService.getPlans(loginUserId);
+        model.addAttribute("planList", plans);
         return "plans.html";
     }
 
@@ -93,7 +93,8 @@ public class PlanController {
     }
 
     @PostMapping("/plans")
-    public String savePlan(@ModelAttribute PlanCreateRequestDto requestDto, HttpServletRequest request) {
+    public String savePlan(@ModelAttribute PlanCreateRequestDto requestDto,
+            HttpServletRequest request, Model model) {
         System.out.println("PlanController - savePlan()");
 
         // 1. 로그인 세션 확인 (없으면 로그인 페이지로)
@@ -108,7 +109,13 @@ public class PlanController {
 
         System.out.println("요청 dto: " + requestDto);
 
-        planService.createPlan(loginUserId, requestDto);
+        try {
+            planService.createPlan(loginUserId, requestDto);
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("formData", requestDto);
+            model.addAttribute("errorMessage", e.getMessage());
+            return "planNew";
+        }
         return "redirect:/plans";
     }
 
@@ -131,6 +138,8 @@ public class PlanController {
         PlanResponseDto planResponseDto = planService.getPlan(loginUserId, planId);
 
         model.addAttribute("planDto", planResponseDto);
+        // Codex 수정: 본인 계획의 일정을 기존 순서대로 조회하여 수정 화면의 읽기 전용 목록에 전달합니다.
+        model.addAttribute("planItemList", planItemService.getPlanItems(loginUserId, planId));
 
         return "planNew";
     }
@@ -139,7 +148,7 @@ public class PlanController {
     public String updatePlan(
             @PathVariable("planId") Long planId,
             @ModelAttribute PlanUpdateRequestDto requestDto,
-            HttpServletRequest request) {
+            HttpServletRequest request, Model model) {
         System.out.println("PlanController - updatePlan()");
 
         HttpSession session = request.getSession(false);
@@ -152,7 +161,16 @@ public class PlanController {
         }
 
         // 유저가 다른 유저의 계획을 수정하지 못하게 하려면 유저 아이디도 넘겨서 검사.
-        planService.updatePlan(planId, loginUserId, requestDto);
+        try {
+            planService.updatePlan(planId, loginUserId, requestDto);
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("planDto", planService.getPlan(loginUserId, planId));
+            // Codex 수정: 날짜 검증 실패로 수정 화면을 다시 열어도 기존 일정 목록을 함께 표시합니다.
+            model.addAttribute("planItemList", planItemService.getPlanItems(loginUserId, planId));
+            model.addAttribute("formData", requestDto);
+            model.addAttribute("errorMessage", e.getMessage());
+            return "planNew";
+        }
 
         return "redirect:/plans";
     }
