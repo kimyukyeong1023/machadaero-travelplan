@@ -34,39 +34,56 @@ public class PlanItemService {
                 this.travelPlanRepository = travelPlanRepository;
         }
 
-        @Transactional
-        public PlanItem createPlanItem(Long planId, PlanItemCreateRequestDto requestDto) {
-                System.out.println("PlanItemService - createPlanItem()");
+        // Codex 수정: 계획 소유자를 확인하고 마지막 순서에 새 일정을 추가합니다.
+@Transactional
+public PlanItem createPlanItem(
+        Long loginUserId, Long planId, PlanItemCreateRequestDto requestDto) {
 
-                TravelPlan travelPlan = travelPlanRepository.findById(planId)
-                                .orElseThrow(() -> new IllegalArgumentException("여행계획이 없습니다."));
+    System.out.println("PlanItemService - createPlanItem()");
 
-                // 해당 여행계획의 마지막 일정 순서를 조회합니다. 첫 일정은 1번입니다.
-                // DB에서 이미 순번이 가장 큰 일정 1개를 골라서 서버로 가져오고,
-                // 스트림에서는 그 객체의 순번 값을 꺼내는 거
-                PlanItem probe = new PlanItem();
-                probe.setTravelPlan(travelPlan);
-                // travelPlan에 조회한 계획의 참조를 넣어서 검색 조건을 만드는 거
-                int nextSortOrder = planItemRepository.findAll(Example.of(probe),
-                                // 첫 번째 페이지, 한 페이지에 일정 1개, 순번이 큰 것부터 정렬
-                                // findAll(...)이라는 이름이어도 모든 일정을 자바로 가져오는 게 아니라,
-                                // 조건에 맞는 일정 중 순번이 가장 큰 1개를 요청
-                                PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "sortOrder")))
-                                .getContent().stream() // 조회된 일정 목록: 0개 또는 1개, 목록을 스트림으로 처리
-                                .map(PlanItem::getSortOrder)// 일정 객체에서 순번을 꺼냄
-                                // 위와 같은 의미 .map(item -> item.getSortOrder())
-                                .findFirst()
-                                .orElse(0) + 1; // 없으면 0 + 1, 있으면 해당 순번 + 1
+    if (loginUserId == null) {
+        throw new ResponseStatusException(
+                HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
+    }
 
-                PlanItem planItem = PlanItem.builder()
-                                .requestDto(requestDto)
-                                .build();
+    // Codex 수정: 순서 저장과 같은 계획 잠금을 사용합니다.
+    // 동시에 추가 요청이 들어와도 같은 마지막 순번을 사용하지 않게 합니다.
+    TravelPlan travelPlan = travelPlanRepository.findByIdForOrderUpdate(planId)
+            .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "여행계획이 없습니다."));
 
-                planItem.setTravelPlan(travelPlan);
-                planItem.setSortOrder(nextSortOrder);
+    if (!loginUserId.equals(travelPlan.getUser().getId())) {
+        throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN, "본인의 여행계획에만 추가할 수 있습니다.");
+    }
 
-                return planItemRepository.save(planItem);
-        }
+    if (requestDto == null
+            || requestDto.getPlaceName() == null
+            || requestDto.getPlaceName().isBlank()) {
+        throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST, "장소명이 필요합니다.");
+    }
+
+    PlanItem probe = new PlanItem();
+    probe.setTravelPlan(travelPlan);
+
+    int nextSortOrder = planItemRepository.findAll(
+                    Example.of(probe),
+                    PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "sortOrder")))
+            .getContent().stream()
+            .map(PlanItem::getSortOrder)
+            .findFirst()
+            .orElse(0) + 1;
+
+    PlanItem planItem = PlanItem.builder()
+            .requestDto(requestDto)
+            .build();
+
+    planItem.setTravelPlan(travelPlan);
+    planItem.setSortOrder(nextSortOrder);
+
+    return planItemRepository.save(planItem);
+}
 
         public List<PlanItem> getPlanItems(Long loginUserId, Long planId) {
                 System.out.println("PlanItemService - getPlanItems");

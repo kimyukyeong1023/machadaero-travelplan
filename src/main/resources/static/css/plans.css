@@ -540,3 +540,45 @@
 #order-status.order-error {
   color: #b42318;
 }
+
+
+/* Codex 추가: flex 배치에서는 상세 영역을 다음 줄로 내립니다. */
+#schedule-order .schedule-item {
+  flex-wrap: wrap;
+}
+
+/* Codex 추가: 상세 내용을 해당 일정의 전체 너비로 표시합니다. */
+#schedule-order .schedule-item-detail {
+  flex: 0 0 100%;
+  grid-column: 1 / -1;
+  min-width: 0;
+  box-sizing: border-box;
+  margin-top: 0.75rem;
+  padding: 1rem;
+  border-top: 1px solid #ccc;
+  background-color: #f7f7f7;
+  text-align: left;
+}
+
+/* Codex 추가: 숨김 상태를 유지합니다. */
+#schedule-order .schedule-item-detail[hidden] {
+  display: none;
+}
+
+/* Codex 추가: 항목명과 내용을 두 열로 정리합니다. */
+#schedule-order .schedule-item-detail dl {
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr);
+  gap: 0.75rem 1rem;
+  margin: 0;
+}
+
+#schedule-order .schedule-item-detail dt {
+  font-weight: bold;
+}
+
+#schedule-order .schedule-item-detail dd {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

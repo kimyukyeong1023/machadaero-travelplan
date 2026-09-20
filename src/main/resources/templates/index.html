@@ -135,95 +135,136 @@
 
       <!-- 2. 가운데 영역 -->
       <div class="content-area">
-        <!-- 검색 전 안내 -->
-        <section class="search-guide" th:if="${pageNo == null}">
-          <h2>가고 싶은 곳을 찾아 여행계획에 담아보세요</h2>
-          <p>관광지 검색 → 계획에 추가 → 방문일과 순서 정리</p>
-        </section>
+        <!-- Codex 수정: 기존 검색 안내와 검색 결과를 왼쪽 영역으로 묶습니다. -->
+        <div class="place-search-panel">
+          <!-- 검색 전 안내 -->
+          <section class="search-guide" th:if="${pageNo == null}">
+            <h2>가고 싶은 곳을 찾아 여행계획에 담아보세요</h2>
+            <p>관광지 검색 → 계획에 추가 → 방문일과 순서 정리</p>
+          </section>
 
-        <!-- 컨트롤러에서 전달한 검색 결과와 페이지 정보 표시 -->
-        <!-- Codex 수정: 페이지 처리 JS가 현재 검색에 적용된 지역·카테고리를 읽도록
+          <!-- 컨트롤러에서 전달한 검색 결과와 페이지 정보 표시 -->
+          <!-- Codex 수정: 페이지 처리 JS가 현재 검색에 적용된 지역·카테고리를 읽도록
      data-l-dong-regn-cd와 data-lcls-systm1을 추가합니다. -->
-        <section
-          class="search-results"
-          th:if="${pageNo != null}"
-          th:attr="data-batch-no=${pageNo},
+          <section
+            class="search-results"
+            th:if="${pageNo != null}"
+            th:attr="data-batch-no=${pageNo},
                   data-total-count=${totalCount},
                   data-keyword=${keyword},
                   data-l-dong-regn-cd=${lDongRegnCd},
                   data-lcls-systm1=${lclsSystm1},
                   data-search-url=@{/api/places}"
-        >
-          <h2>관광지 검색 결과</h2>
-          <p class="search-count" th:text="|총 ${totalCount}건|">총 0건</p>
-          <p
-            class="search-empty"
-            th:hidden="${!#lists.isEmpty(SearchPlaceResponseDto)}"
           >
-            검색 결과가 없습니다.
-          </p>
-
-          <ul class="place-list">
-            <li
-              class="place-item"
-              th:each="place, status : ${SearchPlaceResponseDto}"
-              th:hidden="${status.index >= 5}"
+            <h2>관광지 검색 결과</h2>
+            <p class="search-count" th:text="|총 ${totalCount}건|">총 0건</p>
+            <p
+              class="search-empty"
+              th:hidden="${!#lists.isEmpty(SearchPlaceResponseDto)}"
             >
-              <!-- Codex 수정: 검색 목록에 썸네일을 표시하고, URL이 없으면 안내 문구를 표시합니다. -->
-              <div class="place-image">
-                <img
-                  th:if="${!#strings.isEmpty(place.thumbnailUrl)}"
-                  th:src="${place.thumbnailUrl}"
-                  th:alt="${place.title}"
-                  loading="lazy"
-                />
+              검색 결과가 없습니다.
+            </p>
 
-                <span th:if="${#strings.isEmpty(place.thumbnailUrl)}">
-                  이미지 없음
-                </span>
-              </div>
-              <div class="place-info">
-                <h3 th:text="${place.title}">관광지 이름</h3>
-                <p th:text="${place.address}">관광지 주소</p>
-              </div>
+            <ul class="place-list">
+              <li
+                class="place-item"
+                th:each="place, status : ${SearchPlaceResponseDto}"
+                th:hidden="${status.index >= 5}"
+              >
+                <!-- Codex 수정: 검색 목록에 썸네일을 표시하고, URL이 없으면 안내 문구를 표시합니다. -->
+                <div class="place-image">
+                  <img
+                    th:if="${!#strings.isEmpty(place.thumbnailUrl)}"
+                    th:src="${place.thumbnailUrl}"
+                    th:alt="${place.title}"
+                    loading="lazy"
+                  />
+
+                  <span th:if="${#strings.isEmpty(place.thumbnailUrl)}">
+                    이미지 없음
+                  </span>
+                </div>
+                <div class="place-info">
+                  <h3 th:text="${place.title}">관광지 이름</h3>
+                  <p th:text="${place.address}">관광지 주소</p>
+                </div>
+                <button
+                  type="button"
+                  class="place-detail-button"
+                  th:attr="data-contentid=${place.contentid}
+                      ,data-detail-url=@{/api/places/{id}(id=${place.contentid})}"
+                >
+                  상세보기
+                </button>
+                <!-- Codex 추가: 현재 선택한 계획에 관광지 이름과 주소를 복사해서 추가합니다. -->
+                <button
+                  type="button"
+                  class="place-add-button"
+                  th:if="${session.loginUserId != null}"
+                  th:attr="data-place-name=${place.title},
+                 data-place-address=${place.address}"
+                >
+                  계획에 추가
+                </button>
+
+                <p class="detail-message" role="status"></p>
+                <section
+                  class="place-detail"
+                  th:id="|place-detail-${place.contentid}|"
+                  hidden
+                >
+                  <h4 class="detail-title"></h4>
+                  <p class="detail-address"></p>
+                  <p class="detail-overview"></p>
+                </section>
+              </li>
+            </ul>
+
+            <nav
+              class="page-buttons"
+              th:hidden="${totalCount == 0}"
+              aria-label="검색 결과 페이지"
+            >
+              <button type="button" class="previous-pages" disabled>
+                이전
+              </button>
+              <span class="page-numbers"></span>
               <button
                 type="button"
-                class="place-detail-button"
-                th:attr="data-contentid=${place.contentid}
-                      ,data-detail-url=@{/api/places/{id}(id=${place.contentid})}"
+                class="next-pages"
+                th:disabled="${pageNo * numOfRows >= totalCount}"
               >
-                상세보기
+                다음
               </button>
+            </nav>
+            <p class="pagination-message" role="status" aria-live="polite"></p>
+          </section>
+        </div>
+        <!-- Codex 추가: 계획 선택 시 표시할 빈 일정 영역입니다.
+       실제 일정 조회와 표시는 아직 연결하지 않습니다. -->
+        <!-- Codex 수정: 선택한 계획의 제목, 조회 상태, 일정 목록을 표시합니다. -->
+        <!-- Codex 수정: 일정 조회와 순서 편집 버튼을 함께 표시합니다. -->
+        <section
+          class="selected-plan-panel"
+          aria-label="선택한 계획 일정"
+          aria-busy="false"
+          hidden
+        >
+          <h2 class="selected-plan-title">선택한 계획</h2>
 
-              <p class="detail-message" role="status"></p>
-              <section
-                class="place-detail"
-                th:id="|place-detail-${place.contentid}|"
-                hidden
-              >
-                <h4 class="detail-title"></h4>
-                <p class="detail-address"></p>
-                <p class="detail-overview"></p>
-              </section>
-            </li>
-          </ul>
-
-          <nav
-            class="page-buttons"
-            th:hidden="${totalCount == 0}"
-            aria-label="검색 결과 페이지"
-          >
-            <button type="button" class="previous-pages" disabled>이전</button>
-            <span class="page-numbers"></span>
-            <button
-              type="button"
-              class="next-pages"
-              th:disabled="${pageNo * numOfRows >= totalCount}"
-            >
-              다음
+          <div class="selected-plan-controls">
+            <button type="button" class="home-order-edit">순서 편집</button>
+            <button type="button" class="home-order-save" hidden>
+              순서 저장
             </button>
-          </nav>
-          <p class="pagination-message" role="status" aria-live="polite"></p>
+            <button type="button" class="home-order-cancel" hidden>취소</button>
+            <button type="button" class="home-items-reload">
+              목록 새로고침
+            </button>
+          </div>
+
+          <p class="selected-plan-status" role="status" aria-live="polite"></p>
+          <ol class="selected-plan-items"></ol>
         </section>
       </div>
 
@@ -274,36 +315,42 @@
 
           <!-- Codex 수정: JS가 목록을 다시 배치할 수 있도록 ul은 항상 만듭니다. -->
           <ul class="my-plan-cards">
-            <!-- Codex 추가: 분류·정렬에 사용할 ID와 날짜를 카드에 저장합니다. -->
             <li
               th:each="plan : ${planList}"
               th:attr="data-plan-id=${plan.id},
-                 data-start-date=${plan.startDate},
-                 data-end-date=${plan.endDate}"
+               data-start-date=${plan.startDate},
+               data-end-date=${plan.endDate}"
             >
-              <a
+              <!-- Codex 수정: 제목과 날짜를 버튼 안에 넣어 카드 전체가 클릭되게 합니다.
+         기존에 남아 있던 </a>는 제거하고 마지막에 </button>으로 닫습니다. -->
+              <!-- Codex 수정: 조회·추가는 items-url, 순서 저장은 order-url을 사용합니다. -->
+              <button
+                type="button"
                 class="my-plan-card"
-                th:href="@{/plans/{planId}(planId=${plan.id})}"
+                aria-pressed="false"
+                th:attr="data-items-url=@{/api/plans/{planId}/items(planId=${plan.id})},
+                 data-order-url=@{/plans/{planId}/items/order(planId=${plan.id})}"
               >
                 <h3 th:text="${plan.title}">계획 제목</h3>
+
                 <p>
                   <span
                     th:text="${plan.startDate != null
-                          ? #temporals.format(plan.startDate, 'yyyy.MM.dd')
-                          : '출발일 미정'}"
+                        ? #temporals.format(plan.startDate, 'yyyy.MM.dd')
+                        : '출발일 미정'}"
                   >
                     출발일
                   </span>
                   <span> ~ </span>
                   <span
                     th:text="${plan.endDate != null
-                          ? #temporals.format(plan.endDate, 'yyyy.MM.dd')
-                          : '종료일 미정'}"
+                        ? #temporals.format(plan.endDate, 'yyyy.MM.dd')
+                        : '종료일 미정'}"
                   >
                     종료일
                   </span>
                 </p>
-              </a>
+              </button>
             </li>
           </ul>
         </div>

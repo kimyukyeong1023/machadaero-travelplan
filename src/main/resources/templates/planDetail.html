@@ -9,6 +9,8 @@
       <link rel="stylesheet" th:href="@{/css/plans.css}" />
       <!-- Codex 작성: 순서 편집·취소·저장은 별도 JS에서 처리합니다. -->
       <script th:src="@{/js/plan-order.js}" defer></script>
+      <!-- Codex 추가: 일정별 상세 펼치기·접기를 연결합니다. -->
+      <script th:src="@{/js/plan-detail-toggle.js}" defer></script>
     </th:block>
   </head>
   <body>
@@ -20,18 +22,37 @@
         </div>
 
         <!-- 컨트롤러에서 넘겨줄 plan 데이터를 임시 텍스트로 대체 -->
+        <!-- Codex 수정: 하드코딩된 제목과 날짜를 실제 계획 데이터로 표시합니다. -->
         <div class="plan-title-area">
-          <h2>제주 여행</h2>
-          <p class="plan-date">2026. 09. 20 ~ 2026. 09. 22</p>
+          <h2 th:text="${planDto.title}">계획 제목</h2>
+
+          <p class="plan-date">
+            <span
+              th:text="${planDto.startDate != null
+                    ? #temporals.format(planDto.startDate, 'yyyy. MM. dd')
+                    : '출발일 미정'}"
+            >
+              출발일
+            </span>
+            <span> ~ </span>
+            <span
+              th:text="${planDto.endDate != null
+                    ? #temporals.format(planDto.endDate, 'yyyy. MM. dd')
+                    : '종료일 미정'}"
+            >
+              종료일
+            </span>
+          </p>
         </div>
-
-
       </div>
 
       <!-- 세부 일정(방문 장소) 영역 -->
       <!-- Codex 수정: 저장 URL을 JS에 전달하고, 순서 편집 중에는 일정 추가·수정·삭제를 잠시 숨깁니다. -->
-      <section class="schedule-section" id="schedule-order"
-               th:attr="data-order-url=@{/plans/{planId}/items/order(planId=${planId})}">
+      <section
+        class="schedule-section"
+        id="schedule-order"
+        th:attr="data-order-url=@{/plans/{planId}/items/order(planId=${planId})}"
+      >
         <div class="section-heading">
           <h3>전체 일정</h3>
           <!-- Codex 수정: 상단에는 일정 추가 버튼만 남겨 기존 순서 편집 버튼이 있던 오른쪽에 배치합니다. -->
@@ -44,7 +65,12 @@
             + 일정 추가
           </button>
         </div>
-        <p id="order-status" class="help-text-bottom" role="status" aria-live="polite"></p>
+        <p
+          id="order-status"
+          class="help-text-bottom"
+          role="status"
+          aria-live="polite"
+        ></p>
 
         <div class="schedule-list-container">
           <!-- 리스트 헤더 -->
@@ -55,59 +81,168 @@
             <span class="col-memo">일정 내용</span>
             <!-- Codex 수정: 기존 '관리' 제목 대신 순서 편집 버튼을 배치하고, 저장·취소도 같은 자리에서 표시합니다. -->
             <div class="col-manage">
-              <button type="button" class="btn-outline" id="order-edit"
-                      th:disabled="${#lists.size(planItemList) < 2}">순서 편집</button>
-              <button type="button" class="btn-solid" id="order-save" hidden>순서 저장</button>
-              <button type="button" class="btn-outline" id="order-cancel" hidden>취소</button>
+              <button
+                type="button"
+                class="btn-outline"
+                id="order-edit"
+                th:disabled="${#lists.size(planItemList) < 2}"
+              >
+                순서 편집
+              </button>
+              <button type="button" class="btn-solid" id="order-save" hidden>
+                순서 저장
+              </button>
+              <button
+                type="button"
+                class="btn-outline"
+                id="order-cancel"
+                hidden
+              >
+                취소
+              </button>
             </div>
           </div>
 
           <!-- 일정 목록 -->
           <ul class="schedule-list">
             <!-- Codex 수정: 일정 ID로 화면의 최종 순서를 수집합니다. -->
-            <li class="schedule-item" th:each="planItem : ${planItemList}"
-                th:attr="data-order-item-id=${planItem.id}">
+            <li
+              class="schedule-item"
+              th:each="planItem : ${planItemList}"
+              th:attr="data-order-item-id=${planItem.id}"
+            >
               <span class="col-order" th:text="${planItem.sortOrder}">1</span>
               <span
                 class="col-s-date"
                 th:text="${planItem.visitDate != null ? #temporals.format(planItem.visitDate, 'MM.dd') : '미정'}"
-              >09.20</span>
-              <span class="col-place" th:text="${planItem.placeName}">성산일출봉</span>
+                >09.20</span
+              >
+              <span class="col-place" th:text="${planItem.placeName}"
+                >성산일출봉</span
+              >
               <span class="col-memo" th:text="${planItem.memo}">오전 산책</span>
               <div class="col-manage">
                 <div class="manage-links" data-order-normal>
-                  <a href="#">상세</a> &middot;
+                  <!-- Codex 수정: 페이지 이동 없이 해당 일정 아래의 상세 내용을 펼칩니다. -->
+                  <button
+                    type="button"
+                    class="btn-outline schedule-detail-toggle"
+                    aria-expanded="false"
+                    th:attr="aria-controls=|schedule-detail-${planItem.id}|"
+                  >
+                    상세
+                  </button>
+                  &middot;
                   <!-- 리스트 안의 '수정' 버튼 -->
-                  <a
-                    href="#"
+                  <!-- Codex 수정: 수정 버튼을 상세 버튼과 같은 모양으로 맞춥니다.
+     기존 수정 팝업에 전달하는 데이터는 유지합니다. -->
+                  <button
+                    type="button"
+                    class="btn-outline"
                     th:attr="data-item-id=${planItem.id},
-                             data-place-name=${planItem.placeName},
-                             data-place-address=${planItem.address},
-                             data-visit-date=${planItem.visitDate != null ? #temporals.format(planItem.visitDate, 'yyyy-MM-dd') : ''},
-                             data-visit-time=${planItem.visitTime != null ? #temporals.format(planItem.visitTime, 'HH:mm') : ''},
-                             data-duration=${planItem.duration},
-                             data-memo=${planItem.memo},
-                             data-extra-memo=${planItem.extraMemo}"
-                    onclick="
-                      openScheduleModal(this);
-                      return false;
-                    "
+           data-place-name=${planItem.placeName},
+           data-place-address=${planItem.address},
+           data-visit-date=${planItem.visitDate != null ? #temporals.format(planItem.visitDate, 'yyyy-MM-dd') : ''},
+           data-visit-time=${planItem.visitTime != null ? #temporals.format(planItem.visitTime, 'HH:mm') : ''},
+           data-duration=${planItem.duration},
+           data-memo=${planItem.memo},
+           data-extra-memo=${planItem.extraMemo}"
+                    onclick="openScheduleModal(this)"
                   >
-                    수정</a
-                  >
+                    수정
+                  </button>
                   &middot;
                   <form
                     method="post"
                     th:action="@{/plans/{planId}/items/{itemId}/delete(planId=${planId},itemId=${planItem.id})}"
                     onsubmit="return confirm('이 일정을 삭제하시겠습니까?');"
-                    style="display: inline;"
+                    style="display: inline"
                   >
                     <button type="submit" class="btn-outline">삭제</button>
                   </form>
                 </div>
                 <!-- Codex 수정: 화살표는 편집 모드에서만 표시하며, 클릭할 때는 화면만 변경합니다. -->
-                <button type="button" class="btn-move" data-order-move="up" aria-label="이 일정을 위로 이동" hidden>&uarr;</button>
-                <button type="button" class="btn-move" data-order-move="down" aria-label="이 일정을 아래로 이동" hidden>&darr;</button>
+                <button
+                  type="button"
+                  class="btn-move"
+                  data-order-move="up"
+                  aria-label="이 일정을 위로 이동"
+                  hidden
+                >
+                  &uarr;
+                </button>
+                <button
+                  type="button"
+                  class="btn-move"
+                  data-order-move="down"
+                  aria-label="이 일정을 아래로 이동"
+                  hidden
+                >
+                  &darr;
+                </button>
+              </div>
+
+              <!-- Codex 추가: 각 일정 아래에 독립적으로 펼칠 수 있는 상세 영역입니다. -->
+              <div
+                class="schedule-item-detail"
+                th:id="|schedule-detail-${planItem.id}|"
+                hidden
+              >
+                <dl>
+                  <dt>장소</dt>
+                  <dd th:text="${planItem.placeName}">장소명</dd>
+
+                  <dt>주소</dt>
+                  <dd
+                    th:text="${#strings.isEmpty(planItem.address)
+                  ? '주소 없음' : planItem.address}"
+                  >
+                    주소
+                  </dd>
+
+                  <dt>방문일</dt>
+                  <dd
+                    th:text="${planItem.visitDate != null
+                  ? #temporals.format(planItem.visitDate, 'yyyy. MM. dd')
+                  : '미정'}"
+                  >
+                    방문일
+                  </dd>
+
+                  <dt>방문시간</dt>
+                  <dd
+                    th:text="${planItem.visitTime != null
+                  ? #temporals.format(planItem.visitTime, 'HH:mm')
+                  : '미정'}"
+                  >
+                    방문시간
+                  </dd>
+
+                  <dt>소요시간</dt>
+                  <dd
+                    th:text="${planItem.duration != null
+                  ? planItem.duration + '분'
+                  : '미정'}"
+                  >
+                    소요시간
+                  </dd>
+
+                  <dt>일정 내용</dt>
+                  <dd
+                    th:text="${#strings.isEmpty(planItem.memo)
+                  ? '내용 없음' : planItem.memo}"
+                  >
+                    일정 내용
+                  </dd>
+
+                  <dt>기타 메모</dt>
+                  <dd
+                    th:text="${#strings.isEmpty(planItem.extraMemo)
+                  ? '메모 없음' : planItem.extraMemo}"
+                  >
+                    기타 메모
+                  </dd>
+                </dl>
               </div>
             </li>
           </ul>
@@ -135,8 +270,8 @@
           </div>
 
           <div class="modal-body">
-            <div class="plan-badge">제주 여행</div>
-
+            <!-- Codex 수정: 일정 팝업에도 현재 계획의 실제 제목을 표시합니다. -->
+            <div class="plan-badge" th:text="${planDto.title}">계획 제목</div>
             <form
               id="schedule-form"
               class="schedule-form"
@@ -241,7 +376,12 @@
               >
                 취소
               </button>
-              <button id="schedule-submit" type="submit" form="schedule-form" class="btn-solid">
+              <button
+                id="schedule-submit"
+                type="submit"
+                form="schedule-form"
+                class="btn-solid"
+              >
                 일정 저장
               </button>
             </div>

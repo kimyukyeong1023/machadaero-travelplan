@@ -2,6 +2,7 @@ package com.machadaero.travelplan.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import com.machadaero.travelplan.dto.HomePlanItemResponseDto;
 import com.machadaero.travelplan.dto.PlanCreateRequestDto;
 import com.machadaero.travelplan.dto.PlanResponseDto;
 import com.machadaero.travelplan.dto.PlanUpdateRequestDto;
@@ -19,6 +21,8 @@ import com.machadaero.travelplan.service.PlanService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.server.ResponseStatusException;
 
 @Controller
 public class PlanController {
@@ -85,6 +89,10 @@ public class PlanController {
         }
 
         model.addAttribute("planId", planId);
+        // Codex 추가: 해당 계획의 제목·날짜를 화면에 전달합니다.
+        // 기존 getPlan()에 로그인 사용자 ID를 함께 전달합니다.
+        PlanResponseDto planDto = planService.getPlan(loginUserId, planId);
+        model.addAttribute("planDto", planDto);
 
         List<PlanItem> planItemList = planItemService.getPlanItems(loginUserId, planId);
 
@@ -188,10 +196,44 @@ public class PlanController {
         if (loginUserId == null) {
             return "redirect:/login";
         }
-        
+
         planService.deletePlan(loginUserId, planId);
 
         return "redirect:/plans";
     }
 
+    // Codex 추가: 선택한 계획의 일정을 HTML 대신 JSON으로 반환합니다.
+    @GetMapping("/api/plans/{planId}/items")
+    @ResponseBody
+    public List<HomePlanItemResponseDto> getHomePlanItems(
+            @PathVariable("planId") Long planId,
+            HttpServletRequest request) {
+
+        HttpSession session = request.getSession(false);
+        Long loginUserId = session == null
+                ? null
+                : (Long) session.getAttribute("loginUserId");
+
+        // Codex 추가: 비로그인 요청에는 로그인 페이지 대신 401 상태를 반환합니다.
+        if (loginUserId == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
+        }
+
+        List<PlanItem> items;
+
+        try {
+            // Codex 추가: 기존 서비스의 소유자 확인과 저장된 일정 순서를 재사용합니다.
+            items = planItemService.getPlanItems(loginUserId, planId);
+        } catch (IllegalArgumentException e) {
+            // Codex 추가: 기존 서비스에서 계획을 찾지 못한 경우 404로 응답합니다.
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "여행계획이 없습니다.", e);
+        }
+
+        // Codex 추가: 연관 엔터티를 제외하고 화면에 필요한 값만 변환합니다.
+        return items.stream()
+                .map(HomePlanItemResponseDto::new)
+                .toList();
+    }
 }

@@ -6,11 +6,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.server.ResponseStatusException;
 import com.machadaero.travelplan.dto.PlanItemOrderRequestDto;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import com.machadaero.travelplan.dto.HomePlanItemResponseDto;
 import com.machadaero.travelplan.dto.PlanItemCreateRequestDto;
 import com.machadaero.travelplan.dto.PlanItemUpdateRequestDto;
 import com.machadaero.travelplan.entity.PlanItem;
@@ -57,7 +60,8 @@ public class PlanItemController {
             return "redirect:/login";
         }
 
-        PlanItem planItem = planItemService.createPlanItem(planId, requestDto);
+        // Codex 수정: 기존 상세 페이지의 일정 추가에도 로그인 사용자 ID를 전달합니다.
+        PlanItem planItem = planItemService.createPlanItem(loginUserId, planId, requestDto);
         return "redirect:/plans/" + planId;
     }
 
@@ -75,8 +79,6 @@ public class PlanItemController {
         if (loginUserId == null) {
             return "redirect:/login";
         }
-
-        
 
         return "redirect:/plans/" + planId;
     }
@@ -100,6 +102,7 @@ public class PlanItemController {
 
         return "redirect:/plans/" + planId;
     }
+
     @PostMapping("/plans/{planId}/items/{itemId}/delete")
     public String deletePlanItem(@PathVariable("planId") Long planId,
             @PathVariable("itemId") Long itemId,
@@ -117,5 +120,52 @@ public class PlanItemController {
 
         planItemService.deletePlanItem(loginUserId, planId, itemId);
         return "redirect:/plans/" + planId;
+    }
+
+    // Codex 추가: 메인에서 관광지 이름·주소를 받아 새 일정을 저장합니다.
+    // 화면 이동 없이 생성한 일정 DTO를 JSON으로 반환합니다.
+    @PostMapping("/api/plans/{planId}/items")
+    public ResponseEntity<HomePlanItemResponseDto> createHomePlanItem(
+            @PathVariable("planId") Long planId,
+            @RequestBody PlanItemCreateRequestDto requestDto,
+            HttpServletRequest request) {
+
+        HttpSession session = request.getSession(false);
+        Long loginUserId = session == null
+                ? null
+                : (Long) session.getAttribute("loginUserId");
+
+        if (loginUserId == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
+        }
+
+        PlanItem item = planItemService.createPlanItem(loginUserId, planId, requestDto);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new HomePlanItemResponseDto(item));
+    }
+
+    // Codex 추가: 메인 오른쪽 영역에서 화면 이동 없이 일정을 삭제합니다.
+    @DeleteMapping("/api/plans/{planId}/items/{itemId}")
+    public ResponseEntity<Void> deleteHomePlanItem(
+            @PathVariable("planId") Long planId,
+            @PathVariable("itemId") Long itemId,
+            HttpServletRequest request) {
+
+        HttpSession session = request.getSession(false);
+        Long loginUserId = session == null
+                ? null
+                : (Long) session.getAttribute("loginUserId");
+
+        if (loginUserId == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
+        }
+
+        // Codex 추가: 기존 서비스의 계획 소유자·일정 소속 확인을 재사용합니다.
+        planItemService.deletePlanItem(loginUserId, planId, itemId);
+
+        return ResponseEntity.noContent().build();
     }
 }

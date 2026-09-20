@@ -234,3 +234,204 @@
   outline: 2px solid currentColor;
   outline-offset: 1px;
 }
+
+
+/* Codex 추가: 계획 선택 시 검색 결과와 빈 일정 영역을 좌우로 배치합니다. */
+.home-page .content-area.plan-selected {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: stretch;
+}
+
+/* Codex 추가: 내부 내용 때문에 왼쪽 영역이 과도하게 늘어나지 않게 합니다. */
+.home-page .place-search-panel {
+  min-width: 0;
+}
+
+/* Codex 추가: 오른쪽 빈 일정 영역의 크기와 테두리를 설정합니다. */
+.home-page .selected-plan-panel {
+  min-width: 0;
+  min-height: 22rem;
+  padding: 1rem;
+  border: 1px solid #888;
+  box-sizing: border-box;
+}
+
+/* Codex 수정: 링크에서 버튼으로 바뀌어도 기존 카드 모양을 유지합니다. */
+.home-page button.my-plan-card {
+  width: 100%;
+  font: inherit;
+  text-align: left;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+/* Codex 추가: 현재 선택한 계획을 표시합니다. */
+.home-page button.my-plan-card[aria-pressed="true"] {
+  border-color: #333;
+  background-color: #eef3f8;
+  box-shadow: inset 0 0 0 1px #333;
+}
+
+
+/* Codex 추가: 오른쪽 일정 영역의 제목과 상태 메시지 간격입니다. */
+.home-page .selected-plan-title {
+  margin: 0 0 1rem;
+  overflow-wrap: anywhere;
+}
+
+.home-page .selected-plan-status:empty {
+  display: none;
+}
+
+/* Codex 추가: 서비스에서 받은 순서대로 일정을 세로로 표시합니다. */
+.home-page .selected-plan-items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home-page .selected-plan-item {
+  margin-bottom: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid #aaa;
+  border-radius: 0.5rem;
+  overflow-wrap: anywhere;
+}
+
+.home-page .selected-plan-item h3 {
+  margin: 0 0 0.5rem;
+}
+
+.home-page .selected-item-date {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+}
+
+.home-page .selected-item-memo {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+
+/* Codex 추가: 오른쪽 일정 편집 버튼의 간격을 맞춥니다. */
+.home-page .selected-plan-controls,
+.home-page .selected-item-moves {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.home-page .selected-item-moves {
+  margin-top: 0.75rem;
+  margin-bottom: 0;
+}
+
+/* Codex 추가: 자동으로 저장한 관광지 주소를 표시합니다. */
+.home-page .selected-item-address {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
+/* Codex 수정: 검색 결과가 좌우 배치로 좁아져도 이미지 영역 크기를 유지합니다.
+   영역 밖으로 넘치는 이미지는 잘라 아래 항목과 겹치지 않게 합니다. */
+.home-page .place-image {
+  flex: 0 0 5rem;
+  width: 5rem;
+  height: 4rem;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Codex 수정: 원본 이미지 비율과 관계없이 정해진 영역 안에 표시합니다. */
+.home-page .place-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  object-fit: cover;
+}
+
+/* Codex 추가: 좁은 화면에서는 검색 결과 아래에 일정 영역을 표시합니다. */
+@media (max-width: 640px) {
+  .home-page .content-area.plan-selected {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+
+/* Codex 수정: 계획 선택 시 양쪽 영역의 높이를 같게 하고 위쪽을 맞춥니다. */
+.home-page .content-area.plan-selected {
+  align-items: start;
+}
+
+/* Codex 수정: 왼쪽 검색 영역과 오른쪽 일정 영역의 전체 높이를 통일합니다. */
+.home-page .content-area.plan-selected .place-search-panel,
+.home-page .content-area.plan-selected .selected-plan-panel {
+  height: 50rem;
+  min-height: 0;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* Codex 수정: 왼쪽 검색 결과를 정해진 높이 안에서 세로로 배치합니다. */
+.home-page .content-area.plan-selected .search-results {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+/* Codex 추가: 검색 전 안내도 왼쪽 영역의 높이를 채웁니다. */
+.home-page .content-area.plan-selected .search-guide {
+  height: 100%;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+/* Codex 수정: 상세보기가 펼쳐져도 검색 목록 안에서만 스크롤합니다. */
+.home-page .content-area.plan-selected .place-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* Codex 추가: 검색 제목·건수·페이지 버튼·안내 문구의 크기를 유지합니다. */
+.home-page .content-area.plan-selected .search-results > :not(.place-list) {
+  flex-shrink: 0;
+}
+
+/* Codex 수정: 오른쪽 제목과 편집 버튼 아래에 일정 목록을 배치합니다. */
+.home-page .content-area.plan-selected .selected-plan-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Codex 수정: 오른쪽 일정 목록도 남은 공간 안에서만 스크롤합니다. */
+.home-page .content-area.plan-selected .selected-plan-items {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* Codex 추가: 오른쪽 제목·버튼·상태 메시지를 스크롤 밖에 유지합니다. */
+.home-page .content-area.plan-selected .selected-plan-panel > :not(.selected-plan-items) {
+  flex-shrink: 0;
+}
+
+/* Codex 추가: 숨김 상태가 위의 display 설정보다 우선하도록 합니다. */
+.home-page .content-area.plan-selected [hidden] {
+  display: none;
+}
+
+/* Codex 추가: 일정 내용과 삭제 버튼 사이에 간격을 둡니다. */
+.home-page .home-item-delete {
+  margin-top: 0.75rem;
+  color: #a02020;
+}

@@ -1,9 +1,19 @@
 <!doctype html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org"
-      th:fragment="pageLayout(pageTitle, pageHead, pageBody)">
+<html
+  lang="ko"
+  xmlns:th="http://www.thymeleaf.org"
+  th:fragment="pageLayout(pageTitle, pageHead, pageBody)"
+>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Codex 추가: CSRF가 설정된 경우 JS의 POST 요청에 사용할 토큰을 전달합니다. -->
+    <meta th:if="${_csrf != null}" name="_csrf" th:content="${_csrf.token}" />
+    <meta
+      th:if="${_csrf != null}"
+      name="_csrf_header"
+      th:content="${_csrf.headerName}"
+    />
     <title th:text="${pageTitle}">마차대로</title>
     <link rel="stylesheet" th:href="@{/css/common.css}" />
     <th:block th:replace="${pageHead}"></th:block>
@@ -14,11 +24,16 @@
         <a class="brand" th:href="@{/}">마차대로</a>
         <!-- 다른 화면에서도 메인의 검색 영역으로 이동 -->
         <a th:href="@{/#place-search}">관광지</a>
-        <nav class="header-menu" >
+        <nav class="header-menu">
           <a th:href="@{/plans}">내 계획</a>
-          <a th:if="${session.loginUserId == null}" th:href="@{/login}">로그인</a>
-          <form th:if="${session.loginUserId != null}"
-                th:action="@{/logout}" method="post">
+          <a th:if="${session.loginUserId == null}" th:href="@{/login}"
+            >로그인</a
+          >
+          <form
+            th:if="${session.loginUserId != null}"
+            th:action="@{/logout}"
+            method="post"
+          >
             <button type="submit">로그아웃</button>
           </form>
         </nav>
