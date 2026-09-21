@@ -42,6 +42,7 @@ public class LoginController {
         //UUID는 중복될 가능성이 매우 낮은 식별자를 만들 때 사용하는 자바 기본 클래스
         //randomUUID(): 무작위 UUID를 생성하는 메서드
         //이 프로젝트에서는 로그인 요청을 확인하는 일회용 확인표로 사용
+        //이 확인이 없으면, 우리 사이트에서 해당 브라우저가 시작하지 않은 로그인 응답도 처리할 위험이 있어요.
         String state = UUID.randomUUID().toString();
         try {
             String loginUrl = loginService.createKakaoLoginUrl(state);
@@ -87,6 +88,7 @@ public class LoginController {
         String state = UUID.randomUUID().toString();
         try {
             String loginUrl = loginService.createNaverLoginUrl(state);
+            System.out.println(loginUrl);
             saveState("naver", state, request);
             return "redirect:" + loginUrl;
         } catch (IllegalStateException exception) {
@@ -174,12 +176,14 @@ public class LoginController {
         }
     }
 
+    //로그인 요청의 유효성을 검사
     private boolean isValidState(String provider, String state, HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session == null) {
             return false;
         }
-
+        //synchronized 여러 요청이 동시에 같은 코드를 실행하지 못하도록 잠그는 자바 키워드
+        //같은 세션 객체를 잠금으로 사용하는 블록에는 한 번에 한 요청만 들어갑니다.
         synchronized (session) { // 같은 state를 동시에 두 번 사용하지 못하도록 확인과 삭제를 함께 합니다.
             String savedState = (String) session.getAttribute("oauthState:" + provider);
             Long expiresAt = (Long) session.getAttribute("oauthStateExpiresAt:" + provider);

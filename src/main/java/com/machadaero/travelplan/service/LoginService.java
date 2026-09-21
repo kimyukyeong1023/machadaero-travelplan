@@ -31,10 +31,10 @@ public class LoginService {
     private String kakaoRedirectUri;
 
     // Codex 수정: 네이버 설정값은 기존 application.properties를 그대로 사용합니다.
-    @Value("${login.oauth.naver.client-id}")
+    @Value("${NAVER_REST_API_KEY_MACHADAERO}")
     private String naverClientId;
 
-    @Value("${login.oauth.naver.client-secret}")
+    @Value("${NAVER_REST_API_SECRET_KEY_MACHADAERO}")
     private String naverClientSecret;
 
     @Value("${login.oauth.naver.redirect-uri}")
@@ -135,7 +135,10 @@ public class LoginService {
 
     // Codex 수정: 키가 아직 없어도 서버는 시작하고, 해당 로그인을 시도할 때 설정 누락을 확인합니다.
     private void checkKakaoSettings() {
-        if (kakaoClientId == null || kakaoClientId.isBlank() || kakaoRedirectUri == null || kakaoRedirectUri.isBlank()) {
+        System.out.println("LoginService - checkKakaoSettings()");
+
+        if (kakaoClientId == null || kakaoClientId.isBlank() || kakaoRedirectUri == null
+                || kakaoRedirectUri.isBlank()) {
             throw new IllegalStateException("로그인 설정이 필요합니다.");
         }
     }
@@ -214,7 +217,8 @@ public class LoginService {
 
     // Codex 수정: 키가 아직 없어도 서버는 시작하고, 해당 로그인을 시도할 때 설정 누락을 확인합니다.
     private void checkNaverSettings() {
-        if (naverClientId == null || naverClientId.isBlank() || naverRedirectUri == null || naverRedirectUri.isBlank()) {
+        if (naverClientId == null || naverClientId.isBlank() || naverRedirectUri == null
+                || naverRedirectUri.isBlank()) {
             throw new IllegalStateException("로그인 설정이 필요합니다.");
         }
         if (naverClientSecret == null || naverClientSecret.isBlank()) {
@@ -291,7 +295,8 @@ public class LoginService {
 
     // Codex 수정: 키가 아직 없어도 서버는 시작하고, 해당 로그인을 시도할 때 설정 누락을 확인합니다.
     private void checkGoogleSettings() {
-        if (googleClientId == null || googleClientId.isBlank() || googleRedirectUri == null || googleRedirectUri.isBlank()) {
+        if (googleClientId == null || googleClientId.isBlank() || googleRedirectUri == null
+                || googleRedirectUri.isBlank()) {
             throw new IllegalStateException("로그인 설정이 필요합니다.");
         }
         if (googleClientSecret == null || googleClientSecret.isBlank()) {
