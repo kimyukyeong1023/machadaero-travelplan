@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html
   lang="ko"
@@ -20,7 +21,7 @@
         <div class="search-filters">
           <!-- Codex 수정: 법정동 시도 코드를 전송하고 검색 후 선택값을 유지합니다.
          form 속성으로 아래 검색 폼에 연결해 기존 HTML 배치를 유지합니다. -->
-          <select name="lDongRegnCd" form="place-search-form">
+          <select aria-label="관광 지역" name="lDongRegnCd" form="place-search-form">
             <option
               value=""
               th:selected="${lDongRegnCd == null or lDongRegnCd == ''}"
@@ -82,7 +83,7 @@
 
           <!-- Codex 수정: 첨부된 신분류표의 대분류 코드를 전송합니다.
          value는 API 코드이고 화면에는 사용자용 분류명을 표시합니다. -->
-          <select name="lclsSystm1" form="place-search-form">
+          <select aria-label="관광 카테고리" name="lclsSystm1" form="place-search-form">
             <option
               value=""
               th:selected="${lclsSystm1 == null or lclsSystm1 == ''}"
@@ -126,6 +127,7 @@
           <input
             type="text"
             name="keyword"
+            aria-label="관광지 검색어"
             th:value="${keyword}"
             placeholder="키워드로 관광지 검색"
           />
@@ -140,7 +142,7 @@
           <!-- 검색 전 안내 -->
           <section class="search-guide" th:if="${pageNo == null}">
             <h2>가고 싶은 곳을 찾아 여행계획에 담아보세요</h2>
-            <p>관광지 검색 → 계획에 추가 → 방문일과 순서 정리</p>
+            <p>관광지 검색 → 내 계획 선택 → 계획에 추가 → 순서 정리</p>
           </section>
 
           <!-- 컨트롤러에서 전달한 검색 결과와 페이지 정보 표시 -->

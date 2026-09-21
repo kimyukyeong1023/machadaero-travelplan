@@ -101,3 +101,46 @@ button:disabled {
     flex-wrap: wrap;
   }
 }
+
+/* 마차대로 공통 색상과 헤더. 페이지별 버튼 스타일은 각 페이지 CSS에서 지정합니다. */
+:root {
+  --olive: #626b43;
+  --olive-dark: #50583b;
+  --olive-light: #eef0e4;
+  --canvas: #faf9f4;
+  --surface: #fff;
+  --heading: #493d32;
+  --text: #34352f;
+  --muted: #696c60;
+  --line: #dedfd6;
+}
+body { color: var(--text); background: var(--canvas); font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", sans-serif; }
+.page { max-width: 82rem; margin: 0 auto; padding: 0 1.5rem 2.5rem; }
+.site-header { position: relative; isolation: isolate; min-height: 4.75rem; padding: .75rem 0; border: 0; gap: 2.5rem; color: #faf9f4; background: var(--olive-dark); }
+/* 부모의 최대 너비를 유지하면서 배경만 화면 양끝까지 확장합니다. */
+.site-header::before { content: ""; position: absolute; z-index: -1; inset: 0; background: var(--olive-dark); box-shadow: 0 0 0 100vmax var(--olive-dark); clip-path: inset(0 -100vmax); }
+.site-header a { text-decoration: none; }
+.site-header .brand { display: inline-flex; align-items: center; gap: .65rem; font-size: 1.65rem; letter-spacing: -.055em; white-space: nowrap; }
+.brand-symbol { width: 2.3rem; height: 2.3rem; flex: none; }
+.site-header .header-tour { padding: .75rem .2rem; border-bottom: 2px solid transparent; font-weight: 600; }
+.page:has(.home-page) .header-tour { border-bottom-color: #e5e8d9; }
+.header-menu { gap: 1.5rem; }
+.header-menu form { margin: 0; }
+.header-plans { font-weight: 700; }
+.site-header button { padding: .5rem 0; color: #e0e2d5; background: transparent; border: 0; font-size: .95rem; }
+.site-header a:hover, .site-header button:hover { color: #fff; text-decoration: underline; text-underline-offset: .35em; }
+:where(a, button, input, select):focus-visible { outline: 3px solid var(--olive); outline-offset: 3px; }
+.site-header :focus-visible { outline-color: #faf9f4; }
+@media (max-width: 600px) {
+  .page { padding-inline: 1rem; }
+  .site-header { gap: .9rem; min-height: 4.25rem; }
+  .site-header .brand { font-size: 1.3rem; gap: .35rem; }
+  .brand-symbol { width: 1.65rem; height: 1.65rem; }
+  .header-menu { gap: .8rem; font-size: .875rem; }
+  .site-header .header-tour, .site-header button { font-size: .875rem; }
+}
+@media (max-width: 380px) {
+  .site-header { gap: .65rem; }
+  .brand-symbol { display: none; }
+  .header-menu { gap: .6rem; }
+}

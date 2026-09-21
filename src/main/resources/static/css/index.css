@@ -1,437 +1,117 @@
-/* 메인 화면의 배치만 설정. 공통 헤더는 기존 common.css 사용 */
-
-/* 1. 검색 영역 */
-.home-page .search-area {
-  max-width: 34rem;
-  margin: 1.5rem auto;
-}
-
-.home-page .search-filters {
-  display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.home-page .search-keyword {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.home-page .search-keyword input {
-  flex: 1;
-  min-width: 0;
-}
-
-/* 2. 가운데 영역: 내용이 적어도 내 계획 영역 위에 공간 확보 */
-.home-page .content-area {
-  min-height: 22rem;
-}
-
-.home-page .search-guide {
-  padding: 3rem 1rem;
-  border: 1px solid #888;
-  text-align: center;
-}
-
-.home-page .search-guide p {
-  margin-top: 0.5rem;
-}
-
-/* 3. 검색 결과 예시: HTML의 결과 영역 주석을 해제하면 사용 */
-.home-page .search-results {
-  padding: 1rem;
-  border: 1px solid #888;
-}
-
-.home-page .place-list {
-  margin: 0.75rem 0;
-  padding: 0;
-  list-style: none;
-}
-
-.home-page .place-item {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-bottom: 0.5rem;
-  padding: 0.75rem;
-  border: 1px solid #aaa;
-}
-
-.home-page .place-image {
-  display: grid;
-  place-items: center;
-  width: 5rem;
-  height: 4rem;
-  border: 1px solid #aaa;
-}
-
-.home-page .place-info {
-  flex: 1;
-  min-width: 7rem;
-  overflow-wrap: anywhere;
-}
-
-.home-page .page-buttons {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-}
-
-/* 4. 아래쪽 내 계획 영역 */
-.home-page .my-plans {
-  margin-top: 1rem;
-  padding: 1rem;
-  border: 1px solid #888;
-}
-
-.home-page .login-guide {
-  padding: 1rem;
-  text-align: center;
-}
-
-.home-page .login-guide button {
-  margin-top: 0.5rem;
-}
-
-/* API에서 받은 25개 중 선택한 페이지의 5개만 표시 */
-.home-page [hidden] {
-  display: none;
-}
-
-.home-page .page-numbers {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.home-page .page-numbers button[aria-current="page"] {
-  font-weight: bold;
-  border: 2px solid #222;
-}
-
-/* 상세정보는 해당 관광지의 이름·주소·버튼 아래에 표시 */
-.home-page .place-detail,
-.home-page .detail-message {
-  flex-basis: 100%;
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-
-.home-page .place-detail {
-  border-top: 1px solid #aaa;
-  padding-top: 0.75rem;
-}
-
-.home-page .detail-title {
-  margin: 0 0 0.5rem;
-}
-
-.home-page .detail-overview {
-  margin-top: 0.5rem;
-  white-space: pre-line;
-}
-
-.home-page .detail-message:empty {
-  display: none;
-}
-
-/* Codex 추가: 이미지를 기존 이미지 영역에 맞추고 비율을 유지합니다.
-   영역과 비율이 다르면 이미지 가장자리가 일부 잘립니다. */
-.place-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-
-/* Codex 추가: 제목은 왼쪽, 이동 버튼은 오른쪽 끝에 배치합니다. */
-.home-page .my-plans-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-/* Codex 추가: 기본 여백을 없애 제목과 버튼의 세로 정렬을 맞춥니다. */
-.home-page .my-plans-header h2,
-.home-page .my-plans-header form {
-  margin: 0;
-}
-
-
-/* Codex 수정: 계획 카드를 한 줄로 배치하고,
-   영역 너비를 넘으면 가로 스크롤로 볼 수 있게 합니다. */
-.home-page .my-plan-cards {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 1rem;
-  overflow-x: auto;
-  margin: 1rem 0 0;
-  padding: 0 0 0.75rem;
-  list-style: none;
-}
-
-/* Codex 수정: 카드가 줄어들지 않도록 너비를 고정합니다.
-   좁은 화면에서는 목록 영역 너비의 85%를 사용합니다. */
-.home-page .my-plan-cards > li {
-  flex: 0 0 15rem;
-  max-width: 85%;
-  min-width: 0;
-}
-
-/* Codex 추가: 카드 전체를 클릭할 수 있는 네모 영역으로 표시합니다. */
-.home-page .my-plan-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  box-sizing: border-box;
-  height: 100%;
-  min-height: 8rem;
-  padding: 1rem;
-  border: 1px solid #aaa;
-  border-radius: 0.5rem;
-  color: inherit;
-  text-decoration: none;
-  overflow-wrap: anywhere;
-}
-
-.home-page .my-plan-card h3 {
-  margin: 0 0 0.75rem;
-}
-
-.home-page .my-plan-card p {
-  margin: 0;
-  font-size: 0.9rem;
-}
-
-/* Codex 추가: 마우스나 키보드로 선택한 카드를 구분합니다. */
-.home-page .my-plan-card:hover,
-.home-page .my-plan-card:focus-visible {
-  background-color: #f5f5f5;
-  border-color: #555;
-}
-
-.home-page .my-plans-empty {
-  margin: 1rem 0 0;
-}
-
-
-/* Codex 추가: 계획 분류 버튼을 배치하고 좁은 화면에서는 줄바꿈합니다. */
-.home-page .home-plan-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 1rem;
-}
-
-/* Codex 추가: 선택한 분류 버튼을 구분합니다. */
-.home-page .home-plan-tabs button[aria-pressed="true"] {
-  font-weight: bold;
-  outline: 2px solid currentColor;
-  outline-offset: 1px;
-}
-
-
-/* Codex 추가: 계획 선택 시 검색 결과와 빈 일정 영역을 좌우로 배치합니다. */
-.home-page .content-area.plan-selected {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 1rem;
-  align-items: stretch;
-}
-
-/* Codex 추가: 내부 내용 때문에 왼쪽 영역이 과도하게 늘어나지 않게 합니다. */
-.home-page .place-search-panel {
-  min-width: 0;
-}
-
-/* Codex 추가: 오른쪽 빈 일정 영역의 크기와 테두리를 설정합니다. */
-.home-page .selected-plan-panel {
-  min-width: 0;
-  min-height: 22rem;
-  padding: 1rem;
-  border: 1px solid #888;
-  box-sizing: border-box;
-}
-
-/* Codex 수정: 링크에서 버튼으로 바뀌어도 기존 카드 모양을 유지합니다. */
-.home-page button.my-plan-card {
-  width: 100%;
-  font: inherit;
-  text-align: left;
-  background-color: transparent;
-  cursor: pointer;
-}
-
-/* Codex 추가: 현재 선택한 계획을 표시합니다. */
-.home-page button.my-plan-card[aria-pressed="true"] {
-  border-color: #333;
-  background-color: #eef3f8;
-  box-shadow: inset 0 0 0 1px #333;
-}
-
-
-/* Codex 추가: 오른쪽 일정 영역의 제목과 상태 메시지 간격입니다. */
-.home-page .selected-plan-title {
-  margin: 0 0 1rem;
-  overflow-wrap: anywhere;
-}
-
-.home-page .selected-plan-status:empty {
-  display: none;
-}
-
-/* Codex 추가: 서비스에서 받은 순서대로 일정을 세로로 표시합니다. */
-.home-page .selected-plan-items {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.home-page .selected-plan-item {
-  margin-bottom: 0.75rem;
-  padding: 0.75rem;
-  border: 1px solid #aaa;
-  border-radius: 0.5rem;
-  overflow-wrap: anywhere;
-}
-
-.home-page .selected-plan-item h3 {
-  margin: 0 0 0.5rem;
-}
-
-.home-page .selected-item-date {
-  margin: 0 0 0.5rem;
-  font-size: 0.9rem;
-}
-
-.home-page .selected-item-memo {
-  margin: 0;
-  white-space: pre-wrap;
-}
-
-
-/* Codex 추가: 오른쪽 일정 편집 버튼의 간격을 맞춥니다. */
-.home-page .selected-plan-controls,
-.home-page .selected-item-moves {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
-}
-
-.home-page .selected-item-moves {
-  margin-top: 0.75rem;
-  margin-bottom: 0;
-}
-
-/* Codex 추가: 자동으로 저장한 관광지 주소를 표시합니다. */
-.home-page .selected-item-address {
-  margin: 0 0 0.5rem;
-  font-size: 0.9rem;
-  overflow-wrap: anywhere;
-}
-
-/* Codex 수정: 검색 결과가 좌우 배치로 좁아져도 이미지 영역 크기를 유지합니다.
-   영역 밖으로 넘치는 이미지는 잘라 아래 항목과 겹치지 않게 합니다. */
-.home-page .place-image {
-  flex: 0 0 5rem;
-  width: 5rem;
-  height: 4rem;
-  overflow: hidden;
-  box-sizing: border-box;
-}
-
-/* Codex 수정: 원본 이미지 비율과 관계없이 정해진 영역 안에 표시합니다. */
-.home-page .place-image img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  min-width: 0;
-  min-height: 0;
-  object-fit: cover;
-}
-
-/* Codex 추가: 좁은 화면에서는 검색 결과 아래에 일정 영역을 표시합니다. */
-@media (max-width: 640px) {
-  .home-page .content-area.plan-selected {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-
-/* Codex 수정: 계획 선택 시 양쪽 영역의 높이를 같게 하고 위쪽을 맞춥니다. */
-.home-page .content-area.plan-selected {
-  align-items: start;
-}
-
-/* Codex 수정: 왼쪽 검색 영역과 오른쪽 일정 영역의 전체 높이를 통일합니다. */
-.home-page .content-area.plan-selected .place-search-panel,
-.home-page .content-area.plan-selected .selected-plan-panel {
-  height: 50rem;
-  min-height: 0;
-  min-width: 0;
-  box-sizing: border-box;
-  overflow: hidden;
-}
-
-/* Codex 수정: 왼쪽 검색 결과를 정해진 높이 안에서 세로로 배치합니다. */
-.home-page .content-area.plan-selected .search-results {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  min-height: 0;
-  box-sizing: border-box;
-}
-
-/* Codex 추가: 검색 전 안내도 왼쪽 영역의 높이를 채웁니다. */
-.home-page .content-area.plan-selected .search-guide {
-  height: 100%;
-  box-sizing: border-box;
-  overflow-y: auto;
-}
-
-/* Codex 수정: 상세보기가 펼쳐져도 검색 목록 안에서만 스크롤합니다. */
-.home-page .content-area.plan-selected .place-list {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-}
-
-/* Codex 추가: 검색 제목·건수·페이지 버튼·안내 문구의 크기를 유지합니다. */
-.home-page .content-area.plan-selected .search-results > :not(.place-list) {
-  flex-shrink: 0;
-}
-
-/* Codex 수정: 오른쪽 제목과 편집 버튼 아래에 일정 목록을 배치합니다. */
-.home-page .content-area.plan-selected .selected-plan-panel {
-  display: flex;
-  flex-direction: column;
-}
-
-/* Codex 수정: 오른쪽 일정 목록도 남은 공간 안에서만 스크롤합니다. */
-.home-page .content-area.plan-selected .selected-plan-items {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-}
-
-/* Codex 추가: 오른쪽 제목·버튼·상태 메시지를 스크롤 밖에 유지합니다. */
-.home-page .content-area.plan-selected .selected-plan-panel > :not(.selected-plan-items) {
-  flex-shrink: 0;
-}
-
-/* Codex 추가: 숨김 상태가 위의 display 설정보다 우선하도록 합니다. */
-.home-page .content-area.plan-selected [hidden] {
-  display: none;
-}
-
-/* Codex 추가: 일정 내용과 삭제 버튼 사이에 간격을 둡니다. */
-.home-page .home-item-delete {
-  margin-top: 0.75rem;
-  color: #a02020;
-}
+/* 마차대로 메인: 검색 전/후, 로그인 전/후, 계획 선택 상태를 공통으로 지원합니다. */
+.home-page { --radius: .75rem; }
+.home-page h2 { color: var(--heading); font-size: 1.4rem; line-height: 1.4; letter-spacing: -.035em; }
+.home-page h3 { color: var(--heading); font-size: 1.05rem; line-height: 1.5; }
+.home-page button, .home-page input, .home-page select { min-height: 2.75rem; border: 1px solid var(--line); border-radius: .5rem; padding: .6rem .9rem; color: var(--text); background: var(--surface); }
+.home-page button { font-weight: 500; }
+.home-page button:not(:disabled):hover { border-color: var(--olive); background: #f4f5ed; }
+.home-page button:disabled { color: #94968d; background: #f0f0ec; border-color: #e4e5df; cursor: not-allowed; }
+.home-page .search-keyword button,
+.home-page .place-add-button,
+.home-page .home-order-save,
+.home-page .login-guide button,
+.home-page .page-numbers button[aria-current="page"],
+.home-page .home-plan-tabs button[aria-pressed="true"] { background: var(--olive); color: white; border-color: var(--olive); }
+.home-page .search-keyword button:hover,
+.home-page .place-add-button:not(:disabled):hover,
+.home-page .home-order-save:not(:disabled):hover,
+.home-page .login-guide button:hover { background: var(--olive-dark); }
+.home-page .place-add-button:disabled, .home-page .home-order-save:disabled { background: #f0f0ec; color: #94968d; border-color: var(--line); }
+/* 배경만 전체 너비로 확장하고 검색 폼은 읽기 편한 너비로 유지합니다. */
+.home-page .search-area { position: relative; isolation: isolate; padding: 1.75rem 0; margin-bottom: 1.5rem; background: var(--olive-light); }
+.home-page .search-area::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--olive-light); box-shadow: 0 0 0 100vmax var(--olive-light); clip-path: inset(0 -100vmax); }
+.home-page .search-filters { display: flex; justify-content: center; gap: .75rem; margin-bottom: .75rem; }
+.home-page .search-filters select { min-width: 10rem; }
+.home-page .search-keyword { display: flex; gap: .75rem; max-width: 46rem; margin: 0 auto; }
+.home-page .search-keyword input { flex: 1; min-width: 0; }
+.home-page .search-keyword button { min-width: 6rem; }
+.home-page .content-area { min-width: 0; }
+.home-page .content-area.plan-selected { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 1.25rem; align-items: start; }
+.home-page .place-search-panel, .home-page .selected-plan-panel { min-width: 0; }
+.home-page .search-guide, .home-page .search-results, .home-page .selected-plan-panel, .home-page .my-plans { padding: 1.5rem; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.home-page .search-guide { min-height: 14rem; display: flex; flex-direction: column; justify-content: center; text-align: center; gap: .75rem; }
+.home-page .search-guide p { color: var(--muted); }
+.home-page .search-count { color: var(--muted); margin-top: .4rem; font-size: .95rem; }
+.home-page .place-list { list-style: none; padding: .15rem; margin: 1rem -.15rem; }
+.home-page .place-item { display: grid; grid-template-columns: 6.5rem max-content minmax(0,1fr); gap: .65rem .85rem; padding: 1rem; margin-bottom: .75rem; border: 1px solid var(--line); border-radius: .65rem; align-items: start; }
+.home-page .place-image { grid-column: 1; grid-row: 1 / 3; width: 6.5rem; height: 6.5rem; overflow: hidden; border-radius: .4rem; background: #f2f2eb; display: grid; place-items: center; color: var(--muted); font-size: .8rem; }
+.home-page .place-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.home-page .place-info { grid-column: 2 / -1; min-width: 0; overflow-wrap: anywhere; }
+.home-page .place-info p { margin-top: .3rem; color: var(--muted); font-size: .9rem; }
+.home-page .place-detail-button { grid-column: 2; justify-self: start; }
+.home-page .place-add-button { grid-column: 3; justify-self: start; }
+.home-page .place-item button { font-size: .9rem; padding-inline: .75rem; }
+.home-page .place-detail, .home-page .detail-message { grid-column: 1 / -1; min-width: 0; overflow-wrap: anywhere; font-size: .95rem; }
+.home-page .place-detail { border-top: 1px solid var(--line); padding-top: 1rem; }
+.home-page .detail-title { margin: 0 0 .5rem; }
+.home-page .detail-overview { white-space: pre-line; margin-top: .6rem; }
+.home-page .page-buttons, .home-page .page-numbers { display: flex; align-items: center; justify-content: center; gap: .45rem; }
+.home-page .page-buttons { padding-top: .25rem; flex-wrap: wrap; }
+.home-page .page-buttons button { min-width: 2.5rem; padding-inline: .65rem; }
+.home-page .selected-plan-title { margin-bottom: 1rem; overflow-wrap: anywhere; }
+.home-page .selected-plan-controls, .home-page .selected-item-moves { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; }
+.home-page .selected-plan-controls button { font-size: .9rem; }
+.home-page .selected-plan-items { list-style: none; padding: .15rem; margin: 0 -.15rem; }
+.home-page .selected-plan-item { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: start; gap: .5rem; padding: 1.15rem; margin-bottom: .75rem; border: 1px solid var(--line); border-radius: .65rem; overflow-wrap: anywhere; }
+.home-page .selected-plan-item h3 { grid-column: 1; grid-row: 1; align-self: center; }
+.home-page .selected-item-date, .home-page .selected-item-address, .home-page .selected-item-memo, .home-page .selected-item-moves { grid-column: 1 / -1; margin: 0; }
+.home-page .selected-item-date, .home-page .selected-item-address { color: var(--muted); font-size: .9rem; }
+.home-page .selected-item-memo { white-space: pre-wrap; font-size: .95rem; }
+.home-page .selected-item-moves:not(:has(button:not([hidden]))) { display: none; }
+.home-page .home-item-delete { grid-column: 2; grid-row: 1; display: inline-flex; align-items: center; gap: .3rem; min-height: 2.25rem; padding: .25rem .35rem; color: var(--muted); font-size: .85rem; background: transparent; border: 1px solid transparent; }
+.home-page .home-item-delete::before { content: ""; width: 1rem; height: 1rem; background: currentColor; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7'%3E%3Cpath d='M3 6h18M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7m4-7v7'/%3E%3C/svg%3E") center / contain no-repeat; }
+.home-page .home-item-delete:not(:disabled):hover, .home-page .home-item-delete:focus-visible { color: #a43d36; border-color: transparent; background: #fbf1ef; }
+.home-page .content-area.plan-selected .place-search-panel, .home-page .content-area.plan-selected .selected-plan-panel { height: 43rem; min-height: 0; }
+.home-page .content-area.plan-selected .search-results, .home-page .content-area.plan-selected .selected-plan-panel { display: flex; flex-direction: column; height: 43rem; overflow: hidden; }
+.home-page .content-area.plan-selected .search-guide { height: 100%; overflow-y: auto; }
+.home-page .content-area.plan-selected .place-list, .home-page .content-area.plan-selected .selected-plan-items { flex: 1; min-height: 0; overflow-y: auto; scrollbar-gutter: stable; }
+.home-page .content-area.plan-selected .search-results > :not(.place-list), .home-page .selected-plan-panel > :not(.selected-plan-items) { flex-shrink: 0; }
+.home-page .my-plans { margin-top: 1.5rem; }
+.home-page .my-plans-header { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+.home-page .my-plans-header form { margin: 0; }
+.home-page .my-plans-header button { color: var(--olive-dark); border-color: var(--olive); }
+.home-page .my-plans-header button::after { content: " →"; }
+.home-page .home-plan-tabs { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.2rem; }
+.home-page .home-plan-tabs button { border-radius: 2rem; border-color: transparent; background: #f4f3ee; font-size: .9rem; }
+.home-page .my-plan-cards { display: flex; gap: 1rem; overflow-x: auto; list-style: none; margin: 1.25rem -.15rem 0; padding: .15rem .15rem .8rem; }
+.home-page .my-plan-cards > li { flex: 0 0 17rem; max-width: 88%; min-width: 0; }
+.home-page button.my-plan-card { position: relative; width: 100%; height: 100%; min-height: 10rem; display: flex; flex-direction: column; justify-content: space-between; gap: 1.5rem; padding: 1.25rem; text-align: left; border-radius: .65rem; overflow-wrap: anywhere; }
+.home-page .my-plan-card h3 { padding-right: 1.6rem; }
+.home-page .my-plan-card p { color: var(--muted); font-size: .875rem; font-weight: 400; }
+.home-page .my-plan-card[aria-pressed="true"] { border-color: var(--olive); box-shadow: inset 0 0 0 1px var(--olive); background: var(--olive-light); }
+.home-page .my-plan-card[aria-pressed="true"]::after { content: ""; position: absolute; top: 1.3rem; right: 1.25rem; width: 1.2rem; height: 1.2rem; background: var(--olive); mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24Zm-2 17-5-5 1.5-1.5L10 14l7.5-7.5L19 8Z'/%3E%3C/svg%3E") center / contain no-repeat; }
+.home-page .login-guide { text-align: center; padding: 2rem 1rem; color: var(--muted); }
+.home-page .login-guide button { margin-top: 1rem; }
+.home-page .search-empty, .home-page .my-plans-empty { padding: 1.75rem .5rem; color: var(--muted); }
+.home-page .selected-plan-status, .home-page .pagination-message, .home-page .detail-message { color: var(--muted); margin: .5rem 0; }
+.home-page :is(.selected-plan-status,.pagination-message,.detail-message):empty { display: none; }
+.home-page :is(.my-plan-cards,.place-list,.selected-plan-items) { scrollbar-width: thin; scrollbar-color: #929680 #f1f1eb; }
+@media (min-width: 761px) and (max-width: 1100px) {
+ .home-page .plan-selected .place-item { grid-template-columns: 5rem minmax(0,1fr); }
+ .home-page .plan-selected .place-image { width: 5rem; height: 5rem; grid-row: 1; }
+ .home-page .plan-selected .place-detail-button { grid-column: 1; grid-row: 2; }
+ .home-page .plan-selected .place-add-button { grid-column: 2; grid-row: 2; }
+ .home-page .plan-selected .place-item button { padding-inline: .45rem; font-size: .8rem; }
+}
+@media (max-width: 760px) {
+ .home-page .content-area.plan-selected { grid-template-columns: minmax(0,1fr); }
+ .home-page .content-area.plan-selected .place-search-panel, .home-page .content-area.plan-selected .search-results { height: 36rem; }
+ .home-page .content-area.plan-selected .selected-plan-panel { height: auto; max-height: 34rem; min-height: 12rem; }
+ .home-page .search-results, .home-page .selected-plan-panel, .home-page .my-plans { padding: 1rem; }
+}
+@media (max-width: 480px) {
+ .home-page h2 { font-size: 1.2rem; }
+ .home-page .search-filters select { width: 50%; min-width: 0; font-size: .9rem; }
+ .home-page .search-keyword button { min-width: 4rem; }
+ .home-page .place-item { grid-template-columns: 4.5rem minmax(0,1fr); padding: .75rem; gap: .7rem; }
+ .home-page .place-image { grid-row: 1; width: 4.5rem; height: 4.5rem; }
+ .home-page .place-detail-button { grid-column: 1; grid-row: 2; }
+ .home-page .place-add-button { grid-column: 2; grid-row: 2; }
+ .home-page .place-item button { padding-inline: .4rem; font-size: .8rem; }
+ .home-page .page-buttons, .home-page .page-numbers { gap: .25rem; }
+ .home-page .page-buttons button { min-width: 1.9rem; padding-inline: .3rem; font-size: .85rem; }
+ .home-page .my-plans-header { align-items: start; flex-wrap: wrap; }
+ .home-page .my-plans-header button { font-size: .85rem; }
+}
+/* JS와 Thymeleaf의 숨김 속성이 모든 레이아웃 규칙보다 우선합니다. */
+.home-page [hidden] { display: none !important; }

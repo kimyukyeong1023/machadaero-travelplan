@@ -1,584 +1,132 @@
-/* 상단 헤더 (중앙 정렬 및 우측 버튼 배치) */
-.plan-header-wrapper {
-  position: relative;
-  text-align: center;
-  margin: 3rem 0 2rem;
-}
-
-.plan-header-center h2 {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-}
-
-.plan-header-center p {
-  color: #666;
-  font-size: 0.875rem;
-}
-
-.btn-new-plan {
-  position: absolute;
-  right: 0;
-  top: 0;
-  background: #fff;
-  border: 1px solid #222;
-}
-
-/* 탭 네비게이션 */
-.plan-tabs {
-  display: flex;
-  gap: 1.5rem;
-  margin-bottom: 1rem;
-  border-bottom: 1px solid #ddd;
-}
-
-.plan-tabs a {
-  text-decoration: none;
-  color: #555;
-  padding: 0.5rem 0;
-  font-size: 0.875rem;
-}
-
-.plan-tabs a.active {
-  color: #222;
-  font-weight: bold;
-  border-bottom: 2px solid #222;
-  margin-bottom: -1px; /* 부모 테두리를 덮어쓰기 위해 */
-}
-
-/* 리스트 레이아웃 */
-.list-header {
-  display: flex;
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid #222; /* 굵은 구분선 */
-  font-size: 0.875rem;
-  font-weight: bold;
-}
-
-.plan-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.plan-item {
-  display: flex;
-  align-items: center;
-  padding: 1.25rem 1rem;
-  border: 1px solid #aaa;
-  margin-top: 0.75rem; /* 카드 사이 간격 */
-}
-
-/* 컬럼별 너비 조절 (Flex) */
-.col-title {
-  flex: 1;
-}
-
-.col-date {
-  flex: 2;
-  text-align: center;
-  font-size: 0.9rem;
-}
-
-.col-btn {
-  flex: 1;
-  text-align: right;
-}
-
-.btn-outline {
-  background: #fff;
-  border: 1px solid #aaa;
-  font-size: 0.875rem;
-}
-
-
-
-/* --- 새 계획 생성 폼 전용 스타일 --- */
-.plan-form {
-  margin: 1.5rem 0 3rem;
-}
-
-.plan-form-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #ddd;
-  margin-bottom: 2.5rem;
-}
-
-.btn-back {
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.header-actions button {
-  margin-left: 0.5rem;
-  background: #fff;
-  border: 1px solid #222;
-}
-
-.header-actions .btn-submit {
-  font-weight: bold;
-}
-
-.plan-form-body {
-  max-width: 28rem;
-  margin: 0 auto;
-  text-align: center;
-}
-
-.form-group {
-  margin-bottom: 2rem;
-}
-
-.form-group label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  font-size: 0.95rem;
-}
-
-.required {
-  color: #e53e3e;
-}
-
-.form-group input[type="text"] {
-  width: 100%;
-  text-align: center;
-  padding: 0.5rem;
-  border: 1px solid #888;
-}
-
-.date-range {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 0.5rem;
-}
-
-.date-range input[type="date"] {
-  padding: 0.4rem;
-  border: 1px solid #888;
-}
-
-.help-text {
-  font-size: 0.8rem;
-  color: #666;
-  margin: 0;
-}
-
-/* 하단 일정 미리보기 영역 (비활성 상태) */
-.schedule-preview-section {
-  margin-top: 3rem;
-  border-top: 1px solid #222;
-  padding-top: 1rem;
-}
-
-.schedule-empty-box {
-  border: 1px solid #888;
-  padding: 2.5rem 1rem;
-  text-align: center;
-  background-color: #f9f9f9;
-  margin-bottom: 0.5rem;
-}
-
-.help-text-bottom {
-  font-size: 0.8rem;
-  color: #666;
-}
-
-/* --- 계획 상세 화면 전용 스타일 --- */
-.plan-detail-header {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr; /* 좌, 중, 우 3분할 */
-  align-items: center;
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid #ddd;
-  margin: 1.5rem 0 2rem;
-}
-
-.header-left {
-  justify-self: start;
-}
-
-.plan-title-area {
-  text-align: center;
-}
-
-.plan-title-area h2 {
-  font-size: 1.75rem;
-  margin-bottom: 0.25rem;
-}
-
-.plan-title-area .plan-date {
-  color: #555;
-  font-size: 0.9rem;
-}
-
-.header-right {
-  justify-self: end;
-}
-
-/* 세부 일정 리스트 */
-.schedule-section {
-  margin-top: 2rem;
-}
-
-.schedule-header {
-  margin-bottom: 0.5rem;
-  border-bottom: none; /* list-header의 기본 테두리 제거 */
-}
-
-.schedule-list {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 1rem 0;
-}
-
-.schedule-item {
-  display: flex;
-  align-items: center;
-  padding: 0.75rem 1rem;
-  border: 1px solid #aaa;
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
-}
-
-/* 컬럼별 너비 및 정렬 */
-.col-order { width: 4rem; text-align: center; }
-.col-s-date { width: 5rem; text-align: center; }
-.col-place { width: 12rem; font-weight: bold; }
-.col-memo { flex: 1; }
-.col-manage { 
-  width: 14rem; 
-  text-align: right;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.5rem;
-}
-
-.manage-links a {
-  text-decoration: none;
-  color: #555;
-}
-
-.manage-links a:hover {
-  text-decoration: underline;
-}
-
-.btn-move {
-  background: #fff;
-  border: 1px solid #aaa;
-  padding: 0.2rem 0.5rem;
-  font-size: 1rem;
-  line-height: 1;
-}
-
-
-/* --- 일정 추가/수정 팝업 (Modal) --- */
-.modal-overlay {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-overlay[hidden] {
-  display: none;
-}
-
-.modal-content {
-  background: #fff;
-  width: 50rem; /* 약 800px */
-  max-width: 95vw;
-  padding: 2rem;
-  border: 1px solid #222;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  position: relative;
-}
-
-.modal-header {
-  text-align: center;
-  margin-bottom: 2rem;
-  position: relative;
-}
-
-.modal-header h2 {
-  font-size: 1.5rem;
-  margin: 0;
-}
-
-.btn-close {
-  position: absolute;
-  top: -1rem;
-  right: -1rem;
-  background: none;
-  border: none;
-  font-size: 2rem;
-  cursor: pointer;
-  color: #555;
-}
-
-.plan-badge {
-  display: inline-block;
-  border: 1px solid #222;
-  padding: 0.25rem 0.75rem;
-  font-size: 0.875rem;
-  font-weight: bold;
-  margin-bottom: 1.5rem;
-}
-
-/* 폼 레이아웃 (Grid 활용) */
-.schedule-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
-.form-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-}
-
-.row-label {
-  width: 5rem;
-  font-weight: bold;
-  padding-top: 0.5rem;
-  flex-shrink: 0;
-}
-
-.row-input {
-  flex: 1;
-}
-
-.row-input input[type="text"],
-.row-input textarea {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #aaa;
-  resize: vertical;
-}
-
-.row-input.full-width {
-  flex: 1;
-}
-
-.row-side {
-  width: 12rem;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.btn-search-place {
-  width: 100%;
-  padding: 0.5rem;
-}
-
-.field-help {
-  font-size: 0.75rem;
-  color: #666;
-  margin: 0;
-}
-
-/* 시간 입력 영역 */
-.time-inputs {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.input-group input {
-  padding: 0.4rem;
-  border: 1px solid #aaa;
-}
-
-.inline-label {
-  padding-top: 0.5rem;
-  font-weight: bold;
-}
-
-.duration-input {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.duration-input input {
-  width: 4rem;
-  padding: 0.4rem;
-  border: 1px solid #aaa;
-  text-align: right;
-}
-
-/* 모달 하단 버튼 */
-.modal-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #eee;
-}
-
-.footer-help {
-  font-size: 0.875rem;
-  color: #666;
-  margin: 0;
-}
-
-.footer-actions {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.btn-solid {
-  background: #222;
-  color: #fff;
-  border: 1px solid #222;
-  font-weight: bold;
-  padding: 0.375rem 1rem;
-}
-/* 계획 목록의 관리 버튼 스타일 (plans.html에서 분리) */
-.plan-list-container .col-btn {
-  flex: 1.5;
-}
-
-.plan-actions {
-  display: flex;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.plan-actions form {
-  margin: 0;
-}
-
-.plan-actions button {
-  white-space: nowrap;
-}
-
-.plan-actions .btn-delete-plan {
-  color: #b42318;
-  border-color: #b42318;
-}
-
-.plans-pagination {
-  flex-wrap: wrap;
-}
-
-.plans-pagination .active {
-  border: 1px solid #222;
-  padding: 0.1rem 0.5rem;
-}
-
-.plan-form .form-error {
-  color: #b42318;
-  margin-bottom: 1rem;
-}
-
-/* Codex 수정: JS에서 숨긴 목록을 감추고 기존 페이지 링크 모양을 버튼에도 적용합니다. */
-.plans-page [hidden] {
-  display: none;
-}
-
-.plans-pagination button {
-  color: inherit;
-  background: transparent;
-  border: 1px solid transparent;
-  padding: 0.1rem 0.5rem;
-}
-
-.plans-pagination button.active {
-  border-color: #222;
-}
-/* Codex 수정: 계획 수정 화면의 읽기 전용 일정 목록에만 적용합니다.
-   연도가 포함된 날짜의 너비를 확보하고, 긴 장소명과 메모는 줄바꿈합니다. */
-.schedule-preview-section .col-s-date {
-  width: 7rem;
-  flex-shrink: 0;
-}
-
-.schedule-preview-section .col-order {
-  flex-shrink: 0;
-}
-
-.schedule-preview-section .col-place,
-.schedule-preview-section .col-memo {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-
-.schedule-preview-section .col-memo {
-  white-space: pre-wrap;
-}
-
-/* Codex 작성: 순서 편집 모드에서 숨긴 관리 버튼과 화살표가 기존 flex 스타일로 다시 표시되지 않게 합니다. */
-#schedule-order [hidden] {
-  display: none;
-}
-
-#schedule-order button:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-#order-status {
-  min-height: 1.2em;
-}
-
-#order-status.order-error {
-  color: #b42318;
-}
-
-
-/* Codex 추가: flex 배치에서는 상세 영역을 다음 줄로 내립니다. */
-#schedule-order .schedule-item {
-  flex-wrap: wrap;
-}
-
-/* Codex 추가: 상세 내용을 해당 일정의 전체 너비로 표시합니다. */
-#schedule-order .schedule-item-detail {
-  flex: 0 0 100%;
-  grid-column: 1 / -1;
-  min-width: 0;
-  box-sizing: border-box;
-  margin-top: 0.75rem;
-  padding: 1rem;
-  border-top: 1px solid #ccc;
-  background-color: #f7f7f7;
-  text-align: left;
-}
-
-/* Codex 추가: 숨김 상태를 유지합니다. */
-#schedule-order .schedule-item-detail[hidden] {
-  display: none;
-}
-
-/* Codex 추가: 항목명과 내용을 두 열로 정리합니다. */
-#schedule-order .schedule-item-detail dl {
-  display: grid;
-  grid-template-columns: 6rem minmax(0, 1fr);
-  gap: 0.75rem 1rem;
-  margin: 0;
-}
-
-#schedule-order .schedule-item-detail dt {
-  font-weight: bold;
-}
-
-#schedule-order .schedule-item-detail dd {
-  margin: 0;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
+/* Plan-only rules preserve the common header and completed home page. */
+:is(.plans-page,.plan-detail-page,.plan-form-page) { padding-block:2rem; min-width:0; overflow-wrap:anywhere; }
+:is(.plans-page,.plan-detail-page,.plan-form-page) h2 { color:var(--heading); font-size:1.5rem; line-height:1.4; letter-spacing:-.035em; }
+:is(.plans-page,.plan-detail-page,.plan-form-page) h3 { color:var(--heading); }
+:is(.plans-page,.plan-detail-page,.plan-form-page) button { min-height:2.75rem; padding:.6rem .9rem; border:1px solid var(--line); border-radius:.5rem; color:var(--text); background:var(--surface); font-size:.9rem; }
+:is(.plans-page,.plan-detail-page,.plan-form-page) button:not(:disabled):hover { background:var(--olive-light); border-color:var(--olive); }
+:is(.plans-page,.plan-detail-page,.plan-form-page) :is(.btn-new-plan,.btn-solid,.btn-submit) { background:var(--olive); border-color:var(--olive); color:white; font-weight:600; }
+:is(.plans-page,.plan-detail-page,.plan-form-page) :is(.btn-new-plan,.btn-solid,.btn-submit):not(:disabled):hover { background:var(--olive-dark); }
+:is(.plans-page,.plan-detail-page,.plan-form-page) button:disabled { color:#94968d; background:#f0f0ec; border-color:var(--line); cursor:not-allowed; }
+:is(.plans-page,.plan-detail-page) :is(.btn-delete-plan,.btn-delete-item) { color:var(--muted); border-color:transparent; background:transparent; }
+:is(.plans-page,.plan-detail-page) :is(.btn-delete-plan,.btn-delete-item):not(:disabled):is(:hover,:focus-visible) { color:#a43d36; background:#fbf1ef; border-color:transparent; outline-color:#a43d36; }
+:is(.plan-detail-page,.plan-form-page) .btn-back { display:inline-block; padding-block:.5rem; color:var(--olive-dark); text-decoration:none; font-size:.9rem; font-weight:600; }
+:is(.plan-detail-page,.plan-form-page) .btn-back:hover { text-decoration:underline; }
+:is(.plan-detail-page,.plan-form-page) :is(input,textarea) { width:100%; min-width:0; max-width:100%; min-height:2.75rem; padding:.65rem .8rem; border:1px solid var(--line); border-radius:.5rem; background:var(--surface); color:var(--text); font:inherit; }
+:is(.plan-detail-page,.plan-form-page) textarea { resize:vertical; }
+:is(.plan-detail-page,.plan-form-page) :is(input,textarea):focus-visible { outline:3px solid var(--olive); outline-offset:3px; }
+:is(.plan-detail-page,.plan-form-page) :is(.help-text,.help-text-bottom,.field-help,.footer-help) { color:var(--muted); font-size:.85rem; margin-top:.65rem; }
+:is(.plan-detail-page,.plan-form-page) :is(.schedule-section,.schedule-preview-section,.plan-form-body) { padding:1.5rem; border:1px solid var(--line); border-radius:.75rem; background:var(--surface); min-width:0; }
+/* Plan list */
+.plans-page .plan-header-wrapper { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:1.5rem; }
+.plans-page .plan-header-center p { margin-top:.5rem; color:var(--muted); font-size:.95rem; }
+.plans-page .btn-new-plan { flex-shrink:0; }
+.plans-page .plan-tabs { display:flex; flex-wrap:wrap; gap:.6rem; margin-bottom:1.5rem; }
+.plans-page .plan-tabs a { padding:.6rem 1rem; border:1px solid transparent; border-radius:2rem; background:#f4f3ee; color:var(--muted); text-decoration:none; font-size:.9rem; }
+.plans-page .plan-tabs a:hover { border-color:var(--olive); }
+.plans-page .plan-tabs a.active { background:var(--olive-light); border-color:var(--olive); color:var(--olive-dark); font-weight:700; }
+.plans-page :is(.list-header,.plan-item) { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(17rem,1.2fr); align-items:center; gap:1rem; padding:1.25rem; }
+.plans-page .list-header { padding-block:.5rem; color:var(--muted); font-size:.85rem; }
+.plans-page .list-header .col-btn { text-align:right; }
+.plans-page .plan-list { list-style:none; padding:0; margin:0; }
+.plans-page .plan-item { margin-top:.75rem; border:1px solid var(--line); border-radius:.75rem; background:var(--surface); }
+.plans-page .col-title { min-width:0; }
+.plans-page .col-title h3 { font-size:1.05rem; }
+.plans-page .col-date { color:var(--muted); font-size:.875rem; }
+.plans-page .col-date span { display:inline-block; }
+.plans-page .plan-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:.5rem; }
+.plans-page .plan-actions form { margin:0; }
+.plans-page .plan-actions button { padding-inline:.65rem; }
+.plans-page .plans-empty { display:block; padding:3rem 1rem; text-align:center; color:var(--muted); }
+.plans-page .plans-pagination { flex-wrap:wrap; gap:.5rem; margin-top:1.5rem; }
+.plans-page .plans-pagination button { min-width:2.75rem; }
+.plans-page .plans-pagination button.active { background:var(--olive); color:white; border-color:var(--olive); }
+/* Detail and creation/editing */
+.plan-detail-page .plan-detail-header { margin-bottom:1.5rem; }
+.plan-detail-page .plan-title-area { margin-top:1rem; }
+.plan-detail-page .plan-date { color:var(--muted); margin-top:.5rem; }
+.plan-form-page .plan-form-header { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:1.5rem; }
+.plan-form-page .header-actions { display:flex; flex-wrap:wrap; gap:.5rem; }
+.plan-form-page .header-actions form { margin:0; }
+.plan-form-page .plan-form-body { max-width:48rem; margin-inline:auto; }
+.plan-form-page .plan-form-body h2 { margin-bottom:1.5rem; }
+.plan-form-page .form-group + .form-group { margin-top:1.5rem; }
+.plan-form-page .form-group label { display:block; font-weight:600; margin-bottom:.5rem; }
+.plan-form-page .required { color:#a43d36; }
+.plan-form-page .date-range { display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); align-items:center; gap:.75rem; }
+.plan-form-page .schedule-preview-section { margin-top:1.5rem; }
+.plan-form-page .schedule-empty-box { padding:2rem 1rem; border-radius:.5rem; background:var(--canvas); text-align:center; color:var(--muted); }
+.plan-form-page .form-error { margin-bottom:1rem; color:#a43d36; }
+/* Schedule rows and expanded details */
+:is(.plan-detail-page,.plan-form-page) .schedule-list { list-style:none; padding:0; margin:0; }
+:is(.plan-detail-page,.plan-form-page) :is(.schedule-header,.schedule-item) { display:grid; align-items:center; gap:.75rem; padding:1rem; }
+.plan-detail-page :is(.schedule-header,.schedule-item) { grid-template-columns:2.5rem 4rem minmax(0,1fr) minmax(0,1fr) 14rem; }
+.plan-form-page :is(.schedule-header,.schedule-item) { grid-template-columns:2.5rem 7rem minmax(0,1fr) minmax(0,1fr); }
+:is(.plan-detail-page,.plan-form-page) .schedule-header { color:var(--muted); font-size:.85rem; background:var(--canvas); border-radius:.5rem; margin-bottom:.75rem; }
+:is(.plan-detail-page,.plan-form-page) .schedule-item { border:1px solid var(--line); border-radius:.65rem; margin-bottom:.75rem; font-size:.9rem; }
+:is(.plan-detail-page,.plan-form-page) .col-order { color:var(--olive-dark); text-align:center; font-weight:700; }
+:is(.plan-detail-page,.plan-form-page) .col-s-date { color:var(--muted); }
+:is(.plan-detail-page,.plan-form-page) .col-place { min-width:0; color:var(--heading); font-weight:600; }
+:is(.plan-detail-page,.plan-form-page) .col-memo { min-width:0; white-space:pre-wrap; }
+.plan-detail-page :is(.col-manage,.manage-links) { display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:.4rem; }
+.plan-detail-page .manage-links { font-size:0; }
+.plan-detail-page .manage-links form { margin:0; }
+.plan-detail-page .col-manage button { padding-inline:.65rem; }
+.plan-detail-page .schedule-detail-toggle[aria-expanded="true"] { background:var(--olive-light); border-color:var(--olive); color:var(--olive-dark); }
+.plan-detail-page .schedule-item:has([data-order-move]:not([hidden])) { border-color:var(--olive); }
+.plan-detail-page .schedule-item-detail { grid-column:1 / -1; padding:1rem; background:var(--canvas); border-top:1px solid var(--line); border-radius:.4rem; }
+.plan-detail-page .schedule-item-detail dl { display:grid; grid-template-columns:5rem minmax(0,1fr); gap:.75rem 1rem; margin:0; }
+.plan-detail-page .schedule-item-detail dt { font-weight:600; color:var(--heading); }
+.plan-detail-page .schedule-item-detail dd { margin:0; white-space:pre-wrap; }
+.plan-detail-page #order-status { margin-bottom:.75rem; }
+.plan-detail-page #order-status:empty { display:none; }
+.plan-detail-page #order-status.order-error { color:#a43d36; }
+/* Scrollable schedule modal */
+.plan-detail-page .modal-overlay { position:fixed; inset:0; z-index:1000; display:flex; align-items:center; justify-content:center; padding:1rem; background:rgb(34 35 29 / 45%); }
+.plan-detail-page .modal-content { width:50rem; max-width:100%; max-height:calc(100dvh - 2rem); overflow-y:auto; padding:1.5rem; border:1px solid var(--line); border-radius:.75rem; background:var(--surface); box-shadow:0 1rem 3rem rgb(34 35 29 / 15%); }
+.plan-detail-page .modal-header { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:1rem; }
+.plan-detail-page .btn-close { font-size:1.5rem; padding:.1rem .7rem; border-color:transparent; }
+.plan-detail-page .plan-badge { display:inline-block; max-width:100%; padding:.4rem .75rem; margin-bottom:1.5rem; border-radius:.4rem; background:var(--olive-light); color:var(--olive-dark); font-size:.9rem; }
+.plan-detail-page .schedule-form { display:grid; gap:1.25rem; }
+.plan-detail-page .form-row { display:grid; grid-template-columns:5rem minmax(0,1fr) minmax(0,11rem); gap:.75rem; align-items:start; }
+.plan-detail-page .row-label { padding-top:.65rem; font-weight:600; }
+.plan-detail-page .full-width { grid-column:2 / -1; }
+.plan-detail-page :is(.row-input,.row-side,.input-group) { min-width:0; }
+.plan-detail-page .row-side button { width:100%; }
+.plan-detail-page .time-inputs { grid-column:2 / -1; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); align-items:center; gap:.75rem; }
+.plan-detail-page .time-inputs .input-group { grid-column:1 / -1; }
+.plan-detail-page .inline-label { font-weight:600; }
+.plan-detail-page .duration-input { display:flex; align-items:center; gap:.5rem; min-width:0; }
+.plan-detail-page .modal-footer { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1rem; padding-top:1.25rem; margin-top:1.5rem; border-top:1px solid var(--line); }
+.plan-detail-page .footer-help { margin:0; }
+.plan-detail-page .footer-actions { display:flex; flex-wrap:wrap; gap:.5rem; }
+@media (max-width:1000px) {
+ .plans-page :is(.list-header,.plan-item) { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+ .plans-page .list-header .col-btn { display:none; }
+ .plans-page .plan-actions { grid-column:1 / -1; justify-content:flex-start; }
+ .plan-detail-page :is(.schedule-header,.schedule-item) { grid-template-columns:2.5rem 4rem minmax(0,1fr) minmax(0,1fr); }
+ .plan-detail-page .col-manage { grid-column:1 / -1; justify-content:flex-start; }
+}
+@media (max-width:600px) {
+ :is(.plans-page,.plan-detail-page,.plan-form-page) { padding-block:1.5rem; }
+ .plans-page .plan-header-wrapper { flex-wrap:wrap; }
+ .plans-page .list-header { display:none; }
+ .plans-page .plan-item { grid-template-columns:minmax(0,1fr); padding:1rem; gap:.75rem; }
+ :is(.plan-detail-page,.plan-form-page) :is(.schedule-section,.schedule-preview-section,.plan-form-body) { padding:1rem; }
+ :is(.plan-detail-page,.plan-form-page) .schedule-item { grid-template-columns:2rem minmax(0,1fr); }
+ :is(.plan-detail-page,.plan-form-page) .schedule-item :is(.col-place,.col-memo) { grid-column:1 / -1; }
+ .plan-detail-page .schedule-header { display:block; padding:.75rem; }
+ .plan-detail-page .schedule-header > span, .plan-form-page .schedule-header { display:none; }
+ .plan-detail-page .schedule-item-detail dl { grid-template-columns:minmax(0,1fr); gap:.3rem; }
+ .plan-detail-page .schedule-item-detail dd + dt { margin-top:.5rem; }
+ .plan-detail-page .modal-content { padding:1rem; }
+ .plan-detail-page .form-row { grid-template-columns:minmax(0,1fr); gap:.5rem; }
+ .plan-detail-page .form-row > * { grid-column:1; }
+ .plan-detail-page .row-label { padding:0; }
+ .plan-detail-page .row-side { margin-top:.25rem; }
+}
+@media (max-width:400px) {
+ .plan-form-page .date-range { grid-template-columns:minmax(0,1fr); gap:.4rem; }
+ .plan-form-page .date-range > span { text-align:center; }
+}
+/* JS and Thymeleaf hidden states take precedence over layout. */
+:is(.plans-page,.plan-detail-page,.plan-form-page) [hidden] { display:none !important; }

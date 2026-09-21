@@ -14,7 +14,7 @@
     </th:block>
   </head>
   <body>
-    <main>
+    <main class="plan-detail-page">
       <!-- 상단 제목 및 컨트롤 영역 -->
       <div class="plan-detail-header">
         <div class="header-left">
@@ -158,7 +158,7 @@
                     onsubmit="return confirm('이 일정을 삭제하시겠습니까?');"
                     style="display: inline"
                   >
-                    <button type="submit" class="btn-outline">삭제</button>
+                    <button type="submit" class="btn-outline btn-delete-item">삭제</button>
                   </form>
                 </div>
                 <!-- Codex 수정: 화살표는 편집 모드에서만 표시하며, 클릭할 때는 화면만 변경합니다. -->
@@ -251,7 +251,7 @@
           </p>
         </div>
 
-        <p class="help-text-bottom">상세·수정은 일정 팝업으로 표시합니다.</p>
+        <p class="help-text-bottom">상세를 누르면 내용을 펼쳐 보고, 수정에서 일정을 변경할 수 있습니다.</p>
       </section>
 
       <!-- 일정 추가/수정 팝업 (기본적으로 숨김 상태) -->

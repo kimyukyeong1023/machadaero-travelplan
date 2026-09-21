@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html
   lang="ko"
@@ -21,11 +22,15 @@
   <body>
     <div class="page">
       <header class="site-header">
-        <a class="brand" th:href="@{/}">마차대로</a>
+        <a class="brand" th:href="@{/}" aria-label="마차대로 홈">
+          <svg class="brand-symbol" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false">
+            <path d="M19 12a7 7 0 1 0-14 0c0 5 7 12 7 12s7-7 7-12Z"/><circle cx="12" cy="12" r="2"/>
+            <path d="M12 28c0 8 20 8 20-1" stroke-dasharray="3 3"/><circle cx="32" cy="24" r="3"/>
+          </svg><span>마차대로</span></a>
         <!-- 다른 화면에서도 메인의 검색 영역으로 이동 -->
-        <a th:href="@{/#place-search}">관광지</a>
+        <a class="header-tour" th:href="@{/#place-search}">관광지</a>
         <nav class="header-menu">
-          <a th:href="@{/plans}">내 계획</a>
+          <a class="header-plans" th:href="@{/plans}">내 계획</a>
           <a th:if="${session.loginUserId == null}" th:href="@{/login}"
             >로그인</a
           >

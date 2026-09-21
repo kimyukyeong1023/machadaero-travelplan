@@ -550,7 +550,24 @@
       if (editing || adding || saving) {
         event.preventDefault();
         showStatus("추가가 끝나거나 순서 편집을 저장·취소한 뒤 검색해 주세요.");
+        return;
       }
+
+      // Codex 수정: GET 검색 후 새 화면에서도 선택한 계획을 복원합니다.
+      // HTML을 수정하지 않고 숨김 입력을 만들어 기존 검색 조건과 함께 보냅니다.
+      const form = event.currentTarget;
+      let selection = form.querySelector('input[name="selectedPlanId"]');
+      if (selectedPlanId === null) {
+        selection?.remove();
+        return;
+      }
+      if (!selection) {
+        selection = document.createElement("input");
+        selection.type = "hidden";
+        selection.name = "selectedPlanId";
+        form.append(selection);
+      }
+      selection.value = selectedPlanId;
     });
 
   // Codex 추가: 저장하지 않은 변경 또는 저장 요청 중에는 페이지 이탈을 확인합니다.
@@ -618,4 +635,10 @@ itemList.addEventListener("click", async (event) => {
 });
   refreshControls();
   render();
+
+  // Codex 추가: 현재 사용자의 카드에 있는 계획만 복원합니다.
+  // 기존 클릭 처리를 재사용하여 선택 표시, 좌우 배치, 일정 조회를 함께 실행합니다.
+  const restoredPlanId = new URL(window.location.href).searchParams.get("selectedPlanId");
+  const restoredPlan = plans.find((plan) => plan.dataset.planId === restoredPlanId);
+  restoredPlan?.querySelector(".my-plan-card")?.click();
 })();

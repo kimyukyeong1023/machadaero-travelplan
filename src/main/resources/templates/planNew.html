@@ -11,7 +11,7 @@
     </th:block>
   </head>
   <body>
-    <main th:with="values=${formData != null ? formData : planDto}">
+    <main class="plan-form-page" th:with="values=${formData != null ? formData : planDto}">
       <div class="plan-form">
         
         <!-- 상단 컨트롤 바 -->
@@ -30,6 +30,7 @@
 
         <!-- 중앙 입력 영역 -->
         <div class="plan-form-body">
+          <h2 th:text="${planDto != null ? '여행계획 수정' : '새 여행계획'}">새 여행계획</h2>
           <p class="form-error" th:if="${errorMessage != null}" th:text="${errorMessage}" role="alert"></p>
           <div class="form-group">
             <label for="title">제목 <span class="required">*</span></label>
@@ -39,9 +40,9 @@
           <div class="form-group">
             <label>여행 기간 (선택)</label>
             <div class="date-range">
-              <input type="date" id="startDate" name="startDate" th:attr="form=${planDto != null ? 'edit-plan-form' : 'create-plan-form'}" th:value="${values != null and values.startDate != null ? #temporals.format(values.startDate, 'yyyy-MM-dd') : ''}" />
+              <input type="date" id="startDate" aria-label="출발일" name="startDate" th:attr="form=${planDto != null ? 'edit-plan-form' : 'create-plan-form'}" th:value="${values != null and values.startDate != null ? #temporals.format(values.startDate, 'yyyy-MM-dd') : ''}" />
               <span>~</span>
-              <input type="date" id="endDate" name="endDate" th:attr="form=${planDto != null ? 'edit-plan-form' : 'create-plan-form'}" th:value="${values != null and values.endDate != null ? #temporals.format(values.endDate, 'yyyy-MM-dd') : ''}" />
+              <input type="date" id="endDate" aria-label="종료일" name="endDate" th:attr="form=${planDto != null ? 'edit-plan-form' : 'create-plan-form'}" th:value="${values != null and values.endDate != null ? #temporals.format(values.endDate, 'yyyy-MM-dd') : ''}" />
             </div>
             <p class="help-text">기간은 나중에 입력할 수 있습니다.</p>
           </div>

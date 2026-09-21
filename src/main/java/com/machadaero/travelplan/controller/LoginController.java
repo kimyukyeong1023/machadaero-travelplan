@@ -39,6 +39,9 @@ public class LoginController {
     @GetMapping("/login/kakao")
     public String kakaoLogin(HttpServletRequest request, RedirectAttributes redirectAttributes) {
         System.out.println("LoginController - kakaoLogin()");
+        //UUID는 중복될 가능성이 매우 낮은 식별자를 만들 때 사용하는 자바 기본 클래스
+        //randomUUID(): 무작위 UUID를 생성하는 메서드
+        //이 프로젝트에서는 로그인 요청을 확인하는 일회용 확인표로 사용
         String state = UUID.randomUUID().toString();
         try {
             String loginUrl = loginService.createKakaoLoginUrl(state);
@@ -196,9 +199,11 @@ public class LoginController {
     private void saveLoginSession(User user, HttpServletRequest request) {
         HttpSession session = request.getSession();
         request.changeSessionId();
+        //로그인 정보는 저장하고 OAuth 임시 정보만 삭제
         session.setAttribute("loginUserId", user.getId());
 
         // Codex 수정: 로그인이 끝났으므로 다른 탭에 남아 있던 로그인 요청도 정리합니다.
+        //카카오 로그인이 성공했으니 네이버·구글을 포함해 진행 중이던 로그인 시도의 임시 값도 정리
         String[] providers = {"kakao", "naver", "google"};
         for (String provider : providers) {
             session.removeAttribute("oauthState:" + provider);
