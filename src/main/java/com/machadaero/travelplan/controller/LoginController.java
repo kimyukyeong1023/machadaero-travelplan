@@ -2,8 +2,10 @@ package com.machadaero.travelplan.controller;
 
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,9 +18,13 @@ import com.machadaero.travelplan.service.LoginService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 public class LoginController {
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     @Value("${KAKAO_REST_API_KEY_MACHADAERO}")
     String kakaoRestApiKey;
 
@@ -35,14 +41,52 @@ public class LoginController {
         return "login";
     }
 
+    @PostMapping("/signup")
+    public String signup(@RequestParam("userLocalId") String userLocalId,
+            @RequestParam("userLocalPassword") String userLocalPassword, RedirectAttributes redirectAttributes) {
+        System.out.println("LoginController - signup()");
+        try {
+            String PasswordHash = passwordEncoder.encode(userLocalPassword);
+            loginService.findOrCreateLocalUser(userLocalId, PasswordHash);
+            redirectAttributes.addFlashAttribute("signupMsg", "회원가입이 완료되었습니다. 로그인해주세요");
+            return "redirect:login";
+
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("loginError", e.getMessage());
+            return "redirect:/login";
+        }
+
+    }
+
+    @PostMapping("/local/login")
+    public String localLogin(@RequestParam("userLocalId") String userLocalId,
+            @RequestParam("userLocalPassword") String userLocalPassword, RedirectAttributes redirectAttributes,
+            HttpServletRequest request) {
+        System.out.println("LoginController - localLogin()");
+
+        try {
+            User user = loginService.localLogin(userLocalId, userLocalPassword);
+            HttpSession session = request.getSession();
+            request.changeSessionId();
+            session.setAttribute("loginUserId", user.getId());
+            session.setAttribute("loginProvider", "LOCAL");
+            return "redirect:/";
+
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("loginError", e.getMessage());
+            return "redirect:/login";
+        }
+
+    }
+
     // Codex 수정: Kakao 로그인 버튼 → state 생성 → 로그인 URL 생성 → 해당 회사 로그인 화면으로 이동.
     @GetMapping("/login/kakao")
     public String kakaoLogin(HttpServletRequest request, RedirectAttributes redirectAttributes) {
         System.out.println("LoginController - kakaoLogin()");
-        //UUID는 중복될 가능성이 매우 낮은 식별자를 만들 때 사용하는 자바 기본 클래스
-        //randomUUID(): 무작위 UUID를 생성하는 메서드
-        //이 프로젝트에서는 로그인 요청을 확인하는 일회용 확인표로 사용
-        //이 확인이 없으면, 우리 사이트에서 해당 브라우저가 시작하지 않은 로그인 응답도 처리할 위험이 있어요.
+        // UUID는 중복될 가능성이 매우 낮은 식별자를 만들 때 사용하는 자바 기본 클래스
+        // randomUUID(): 무작위 UUID를 생성하는 메서드
+        // 이 프로젝트에서는 로그인 요청을 확인하는 일회용 확인표로 사용
+        // 이 확인이 없으면, 우리 사이트에서 해당 브라우저가 시작하지 않은 로그인 응답도 처리할 위험이 있어요.
         String state = UUID.randomUUID().toString();
         try {
             String loginUrl = loginService.createKakaoLoginUrl(state);
@@ -74,6 +118,7 @@ public class LoginController {
             // 3. 우리 회원 찾기/생성 → 4. 우리 회원 번호를 세션에 저장
             User user = loginService.findOrCreateUser("KAKAO", providerUserId);
             saveLoginSession(user, request);
+            request.getSession().setAttribute("loginProvider", "KAKAO");
             return "redirect:/";
         } catch (RestClientException | IllegalStateException | DataAccessException exception) {
             // Codex 수정: 실패 원문의 토큰·개인정보는 출력하지 않고 사용자에게 재시도를 안내합니다.
@@ -117,6 +162,7 @@ public class LoginController {
             // 3. 우리 회원 찾기/생성 → 4. 우리 회원 번호를 세션에 저장
             User user = loginService.findOrCreateUser("NAVER", providerUserId);
             saveLoginSession(user, request);
+            request.getSession().setAttribute("loginProvider", "NAVER");
             return "redirect:/";
         } catch (RestClientException | IllegalStateException | DataAccessException exception) {
             // Codex 수정: 실패 원문의 토큰·개인정보는 출력하지 않고 사용자에게 재시도를 안내합니다.
@@ -159,6 +205,7 @@ public class LoginController {
             // 3. 우리 회원 찾기/생성 → 4. 우리 회원 번호를 세션에 저장
             User user = loginService.findOrCreateUser("GOOGLE", providerUserId);
             saveLoginSession(user, request);
+            request.getSession().setAttribute("loginProvider", "GOOGLE");
             return "redirect:/";
         } catch (RestClientException | IllegalStateException | DataAccessException exception) {
             // Codex 수정: 실패 원문의 토큰·개인정보는 출력하지 않고 사용자에게 재시도를 안내합니다.
@@ -176,14 +223,14 @@ public class LoginController {
         }
     }
 
-    //로그인 요청의 유효성을 검사
+    // 로그인 요청의 유효성을 검사
     private boolean isValidState(String provider, String state, HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session == null) {
             return false;
         }
-        //synchronized 여러 요청이 동시에 같은 코드를 실행하지 못하도록 잠그는 자바 키워드
-        //같은 세션 객체를 잠금으로 사용하는 블록에는 한 번에 한 요청만 들어갑니다.
+        // synchronized 여러 요청이 동시에 같은 코드를 실행하지 못하도록 잠그는 자바 키워드
+        // 같은 세션 객체를 잠금으로 사용하는 블록에는 한 번에 한 요청만 들어갑니다.
         synchronized (session) { // 같은 state를 동시에 두 번 사용하지 못하도록 확인과 삭제를 함께 합니다.
             String savedState = (String) session.getAttribute("oauthState:" + provider);
             Long expiresAt = (Long) session.getAttribute("oauthStateExpiresAt:" + provider);
@@ -203,12 +250,12 @@ public class LoginController {
     private void saveLoginSession(User user, HttpServletRequest request) {
         HttpSession session = request.getSession();
         request.changeSessionId();
-        //로그인 정보는 저장하고 OAuth 임시 정보만 삭제
+        // 로그인 정보는 저장하고 OAuth 임시 정보만 삭제
         session.setAttribute("loginUserId", user.getId());
 
         // Codex 수정: 로그인이 끝났으므로 다른 탭에 남아 있던 로그인 요청도 정리합니다.
-        //카카오 로그인이 성공했으니 네이버·구글을 포함해 진행 중이던 로그인 시도의 임시 값도 정리
-        String[] providers = {"kakao", "naver", "google"};
+        // 카카오 로그인이 성공했으니 네이버·구글을 포함해 진행 중이던 로그인 시도의 임시 값도 정리
+        String[] providers = { "kakao", "naver", "google" };
         for (String provider : providers) {
             session.removeAttribute("oauthState:" + provider);
             session.removeAttribute("oauthStateExpiresAt:" + provider);
@@ -227,17 +274,23 @@ public class LoginController {
         // 이 요청에 연결된 유효한 세션을 가져오는 메서드야.
         // 인자 false는 “세션이 없어도 새로 만들지 마”라는 뜻
         HttpSession session = request.getSession(false);
+        String loginProvider = (String) session.getAttribute("loginProvider");
 
         // 세션이 있는지 확인 후 해당 세션 무효화
         if (session != null) {
             session.invalidate();
 
         }
-        String kakaoLogoutUrl = "https://kauth.kakao.com/oauth/logout"
-                + "?client_id=" +kakaoRestApiKey
-                + "&logout_redirect_uri=http://localhost:8080" ;
+        if ("KAKAO".equals(loginProvider)) {
+            String kakaoLogoutUrl = "https://kauth.kakao.com/oauth/logout"
+                    + "?client_id=" + kakaoRestApiKey
+                    + "&logout_redirect_uri=http://localhost:8080";
 
-        return "redirect:"+kakaoLogoutUrl;
+            return "redirect:" + kakaoLogoutUrl;
+        }
+
+        return "redirect:/login";
+
     }
 
 }

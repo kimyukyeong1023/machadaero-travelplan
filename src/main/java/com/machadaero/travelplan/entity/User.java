@@ -30,13 +30,22 @@ public class User {
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    //각 컬럼은 null을 허용하고, 여러 컬럼을 묶은 조건으로 검증
+
+    @Column()
     private String provider;
 
-    @Column(name = "provider_user_id", nullable = false)
+    @Column(name = "provider_user_id")
     private String providerUserId;
+
+    @Column(name = "user_local_id", unique = true)
+    private  String userLocalId;
+
+    @Column (name = "password_Hash")
+    private  String passwordHash;
+
     
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at" )
     private LocalDateTime createdAt;
 
     // JPA가 신규 엔터티를 영속화하기 전에 호출

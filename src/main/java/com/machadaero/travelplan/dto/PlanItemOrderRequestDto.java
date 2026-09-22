@@ -8,6 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PlanItemOrderRequestDto {
+    //오래된 화면에서 저장해서 다른 변경을 덮어쓰는 일을 방지하기 위해서
     private List<Long> originalItemIds;
     private List<Long> itemIds;
 }

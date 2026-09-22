@@ -17,6 +17,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -30,7 +31,7 @@ import com.machadaero.travelplan.repository.UserRepository;
 class SocialLoginApiTests {
     private final RestClient.Builder builder = RestClient.builder();
     private final MockRestServiceServer server = MockRestServiceServer.bindTo(builder).build();
-    private final LoginService loginService = new LoginService(mock(UserRepository.class));
+    private final LoginService loginService = new LoginService(mock(UserRepository.class), mock(PasswordEncoder.class));
 
     @BeforeEach
     void setUp() {

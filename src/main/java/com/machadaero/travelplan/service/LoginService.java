@@ -3,10 +3,12 @@ package com.machadaero.travelplan.service;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -20,6 +22,9 @@ import com.machadaero.travelplan.repository.UserRepository;
 // 아래에서 카카오 → 네이버 → 구글 → 우리 DB 회원 조회/저장 순서로 읽으면 됩니다.
 @Service
 public class LoginService {
+    @Autowired 
+    private final PasswordEncoder passwordEncoder;
+
     // Codex 수정: 카카오 설정값은 기존 application.properties를 그대로 사용합니다.
     @Value("${login.oauth.kakao.client-id}")
     private String kakaoClientId;
@@ -53,13 +58,14 @@ public class LoginService {
     private final UserRepository userRepository;
     private final RestClient restClient;
 
-    public LoginService(UserRepository userRepository) {
+    public LoginService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         // 외부 서버가 응답하지 않을 때 기다릴 최대 시간을 설정합니다.
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         factory.setConnectTimeout(5000);
         factory.setReadTimeout(10000);
         this.restClient = RestClient.builder().requestFactory(factory).build();
+        this.passwordEncoder = passwordEncoder;
     }
 
     // ===== Codex 수정: 카카오 로그인 =====
@@ -334,5 +340,41 @@ public class LoginService {
             }
             throw exception;
         }
+    }
+
+    public User findOrCreateLocalUser(String userLocalId, String PasswordHash) {
+
+        System.out.println(" LoginService - findOrCreateLocalUser()");
+
+        Optional<User> optionalUser = userRepository.findByUserLocalId(userLocalId);
+
+        if (optionalUser.isPresent()) {
+            throw new IllegalArgumentException("이미 가입된 아이디입니다.");
+
+        }
+        User user =new User();
+        user.setUserLocalId(userLocalId);
+        user.setPasswordHash(PasswordHash);
+        userRepository.save(user);
+
+        return user;
+    }
+    public User localLogin(String userLocalId, String userLocalPassword){
+        System.out.println(" LoginService - localLogin()");
+        Optional<User> optionalUser = userRepository.findByUserLocalId(userLocalId);
+        if (!optionalUser.isPresent()) {
+            throw new IllegalArgumentException("가입되지 않은 아이디입니다. 아이디를 확인해주세요");
+
+        }
+        User user=optionalUser.get();
+        if (passwordEncoder.matches(userLocalPassword, user.getPasswordHash()) ) {
+
+            return user;
+            
+        }else{
+            throw new IllegalArgumentException("아이디 또는 비밀번호를 확인해주세요");
+
+        }
+
     }
 }

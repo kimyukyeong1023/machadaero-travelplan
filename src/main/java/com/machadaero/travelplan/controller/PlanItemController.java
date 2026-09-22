@@ -129,6 +129,7 @@ public class PlanItemController {
             @PathVariable("planId") Long planId,
             @RequestBody PlanItemCreateRequestDto requestDto,
             HttpServletRequest request) {
+        System.out.println("PlanItemController - createHomePlanItem()");
 
         HttpSession session = request.getSession(false);
         Long loginUserId = session == null

@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -167,7 +168,7 @@ class LoginFlowTests {
         User user = new User(provider, "12345");
         user.setId(42L);
         when(repository.findByProviderAndProviderUserId(provider, "12345")).thenReturn(Optional.of(user));
-        assertSame(user, new LoginService(repository).findOrCreateUser(provider, "12345"));
+        assertSame(user, new LoginService(repository, mock(PasswordEncoder.class)).findOrCreateUser(provider, "12345"));
         verify(repository, never()).save(any());
     }
 
@@ -175,7 +176,7 @@ class LoginFlowTests {
     void newMemberUsesProviderAndExternalId() {
         UserRepository repository = mock(UserRepository.class);
         when(repository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        User user = new LoginService(repository).findOrCreateUser("NAVER", "12345");
+        User user = new LoginService(repository, mock(PasswordEncoder.class)).findOrCreateUser("NAVER", "12345");
         assertEquals("NAVER", user.getProvider());
         assertEquals("12345", user.getProviderUserId());
         verify(repository).findByProviderAndProviderUserId("NAVER", "12345");
@@ -189,6 +190,6 @@ class LoginFlowTests {
         when(repository.findByProviderAndProviderUserId("GOOGLE", "12345"))
                 .thenReturn(Optional.empty()).thenReturn(Optional.of(existing));
         when(repository.save(any(User.class))).thenThrow(new DataIntegrityViolationException("duplicate"));
-        assertSame(existing, new LoginService(repository).findOrCreateUser("GOOGLE", "12345"));
+        assertSame(existing, new LoginService(repository, mock(PasswordEncoder.class)).findOrCreateUser("GOOGLE", "12345"));
     }
 }

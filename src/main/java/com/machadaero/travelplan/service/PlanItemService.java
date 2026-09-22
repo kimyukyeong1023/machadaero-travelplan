@@ -119,17 +119,14 @@ public PlanItem createPlanItem(
                         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "일정 순서 목록이 필요합니다.");
                 }
 
-                // Codex 작성: 다른 탭에서 순서나 일정 목록을 변경한 경우 오래된 화면의 저장을 거부합니다.
-                if (!currentIds.equals(requestDto.getOriginalItemIds())) {
-                        throw new ResponseStatusException(HttpStatus.CONFLICT, "일정이 변경되었습니다. 새로고침 후 다시 편집해 주세요.");
-                }
+
                 List<Long> requestedIds = requestDto.getItemIds();
                 if (requestedIds.size() != currentIds.size()
                                 || new HashSet<>(requestedIds).size() != requestedIds.size()
                                 || !new HashSet<>(requestedIds).equals(new HashSet<>(currentIds))) {
                         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "해당 계획의 모든 일정을 중복 없이 보내야 합니다.");
                 }
-
+                
                 // Codex 작성: 검증을 모두 통과한 후에만 순번을 변경합니다. 제목·날짜·메모는 변경하지 않습니다.
                 Map<Long, PlanItem> itemsById = items.stream()
                                 .collect(Collectors.toMap(PlanItem::getId, Function.identity()));
